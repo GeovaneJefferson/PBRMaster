@@ -39,6 +39,7 @@ class MainWindow(QMainWindow):
         self.ui.normal_map_checkbox.setChecked(True)
         self.ui.specular_map_checkbox.setChecked(True)
         self.ui.roughness_map_checkbox.setChecked(True)
+        self.ui.Transparent_map_checkbox.setEnabled(False)
 
         # Connection
         self.ui.load_texture_btn.clicked.connect(self.load_image)
