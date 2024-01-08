@@ -311,6 +311,7 @@ class MainWindow(QMainWindow):
         self.ui.stylized_settings.show()
         self.ui.pixel_settings.hide()
         self.ui.normal_settings.hide()
+        self.ui.toon_settings.hide()
         
         # Read the input image
         img = cv2.imread(self.modifield_image)
@@ -367,6 +368,7 @@ class MainWindow(QMainWindow):
         # Hide
         self.ui.normal_settings.hide()
         self.ui.stylized_settings.hide()
+        self.ui.toon_settings.hide()
 
         if self.loaded_image is not None:
             # Convert QImage to PIL Image
@@ -407,6 +409,10 @@ class MainWindow(QMainWindow):
     # TOON
     def apply_toon(self):
         self.choosed_style = 'toon'
+
+        # Hide
+        self.ui.normal_settings.hide()
+        self.ui.stylized_settings.hide()
 
         # Enable buttons
         self.ui.toon_settings.show()
@@ -452,6 +458,7 @@ class MainWindow(QMainWindow):
         # Hide
         self.ui.stylized_settings.hide()
         self.ui.pixel_settings.hide()
+        self.ui.toon_settings.hide()
 
         # Add to added list
         if f'{self.file_location()}_Color.png' not in preview_list:
