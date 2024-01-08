@@ -39,6 +39,7 @@ class MainWindow(QMainWindow):
         self.ui.normal_map_checkbox.setChecked(True)
         self.ui.specular_map_checkbox.setChecked(True)
         self.ui.roughness_map_checkbox.setChecked(True)
+        self.ui.ao_map_checkbox.setChecked(True)
         self.ui.Transparent_map_checkbox.setEnabled(False)
 
         # Connection
@@ -199,7 +200,7 @@ class MainWindow(QMainWindow):
             self.update_toon()
             self.apply_toon()
              
-        self.done()
+        self.done() 
 
     # Get file location
     def file_location(self):
@@ -216,6 +217,7 @@ class MainWindow(QMainWindow):
 
     # Save
     def save_textures(self):
+        # if '_Color' not in self.file_path:
         # Check if the file exists before renaming
         if os.path.exists(f'{self.texture_location}/.{self.texture_name}_Color.png'):
             os.rename(f'{self.texture_location}/.{self.texture_name}_Color.png', f'{self.texture_location}/{self.texture_name}_Color.png')
@@ -245,7 +247,7 @@ class MainWindow(QMainWindow):
     
     def xxx(self, coordinates, type):
         img = Image.fromarray(coordinates)
-        preview_size = 250
+        preview_size = 200
         
         # Get texture path name
         self.texture_name = self.file_location().split('/')[-1].split('.')[:-1][0]
@@ -286,7 +288,19 @@ class MainWindow(QMainWindow):
             # Add to preview
             pixmap = QPixmap(preview_list[3])
             self.ui.preview_4.setPixmap(pixmap.scaledToWidth(preview_size))
-    
+        
+        # Ambient Occlusion
+        elif type == 'AO':
+            img.save(f'{texture_location}/.{self.texture_name}_ambient_occlusion.png')
+            
+            # Add to added list
+            if f'{texture_location}/.{self.texture_name}_ambient_occlusion.png' not in preview_list:
+                preview_list.append(f'{texture_location}/.{self.texture_name}_ambient_occlusion.png')
+            
+            # Add to preview
+            pixmap = QPixmap(preview_list[4])
+            self.ui.preview_5.setPixmap(pixmap.scaledToWidth(preview_size))
+        
         # Transparent
         elif type == 'Transparent':
             img.save(f'{texture_location}/.{self.texture_name}_{type}.png')
@@ -575,6 +589,24 @@ class MainWindow(QMainWindow):
 
             # return specular_map.astype(np.uint8)
             self.xxx(specular_map.astype(np.uint8), 'Specular')
+        
+        # AMBIENT OCCLUSION
+        if self.ui.ao_map_checkbox.isChecked():
+            texture = cv2.imread(self.file_path)
+
+            # Convert the texture to grayscale
+            grayscale_texture = cv2.cvtColor(texture, cv2.COLOR_BGR2GRAY)
+
+            # Apply a simple blur to the grayscale texture
+            blurred_texture = cv2.GaussianBlur(grayscale_texture, (5, 5), 0)
+
+            # Normalize the blurred texture to the range [0, 1]
+            normalized_texture = blurred_texture / 255.0
+
+            # Invert the values to create ambient occlusion
+            ambient_occlusion_map = self.normal_size_value - normalized_texture
+
+            self.xxx((ambient_occlusion_map * 255).astype(np.uint8), 'AO')
 
         if self.ui.Transparent_map_checkbox.isChecked():
             # Remove Background

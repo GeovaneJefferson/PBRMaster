@@ -153,6 +153,13 @@
            </widget>
           </item>
           <item>
+           <widget class="QCheckBox" name="roughness_map_checkbox">
+            <property name="text">
+             <string>Roughness</string>
+            </property>
+           </widget>
+          </item>
+          <item>
            <widget class="QCheckBox" name="specular_map_checkbox">
             <property name="text">
              <string>Specular</string>
@@ -160,9 +167,9 @@
            </widget>
           </item>
           <item>
-           <widget class="QCheckBox" name="roughness_map_checkbox">
+           <widget class="QCheckBox" name="ao_map_checkbox">
             <property name="text">
-             <string>Roughness</string>
+             <string>Ambient Occlusion</string>
             </property>
            </widget>
           </item>
@@ -507,6 +514,13 @@
           </item>
           <item>
            <widget class="QLabel" name="preview_4">
+            <property name="text">
+             <string/>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="preview_5">
             <property name="text">
              <string/>
             </property>

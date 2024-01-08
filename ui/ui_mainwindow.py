@@ -111,15 +111,20 @@ class Ui_MainWindow(object):
 
         self.verticalLayout_3.addWidget(self.normal_map_checkbox)
 
+        self.roughness_map_checkbox = QCheckBox(self.centralwidget)
+        self.roughness_map_checkbox.setObjectName(u"roughness_map_checkbox")
+
+        self.verticalLayout_3.addWidget(self.roughness_map_checkbox)
+
         self.specular_map_checkbox = QCheckBox(self.centralwidget)
         self.specular_map_checkbox.setObjectName(u"specular_map_checkbox")
 
         self.verticalLayout_3.addWidget(self.specular_map_checkbox)
 
-        self.roughness_map_checkbox = QCheckBox(self.centralwidget)
-        self.roughness_map_checkbox.setObjectName(u"roughness_map_checkbox")
+        self.ao_map_checkbox = QCheckBox(self.centralwidget)
+        self.ao_map_checkbox.setObjectName(u"ao_map_checkbox")
 
-        self.verticalLayout_3.addWidget(self.roughness_map_checkbox)
+        self.verticalLayout_3.addWidget(self.ao_map_checkbox)
 
         self.Transparent_map_checkbox = QCheckBox(self.centralwidget)
         self.Transparent_map_checkbox.setObjectName(u"Transparent_map_checkbox")
@@ -344,6 +349,11 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout_7.addWidget(self.preview_4)
 
+        self.preview_5 = QLabel(self.centralwidget)
+        self.preview_5.setObjectName(u"preview_5")
+
+        self.horizontalLayout_7.addWidget(self.preview_5)
+
         self.horizontalSpacer = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
 
         self.horizontalLayout_7.addItem(self.horizontalSpacer)
@@ -390,8 +400,9 @@ class Ui_MainWindow(object):
         self.toon_btn.setText(QCoreApplication.translate("MainWindow", u"Toon", None))
         self.label_6.setText(QCoreApplication.translate("MainWindow", u"Maps", None))
         self.normal_map_checkbox.setText(QCoreApplication.translate("MainWindow", u"Normal", None))
-        self.specular_map_checkbox.setText(QCoreApplication.translate("MainWindow", u"Specular", None))
         self.roughness_map_checkbox.setText(QCoreApplication.translate("MainWindow", u"Roughness", None))
+        self.specular_map_checkbox.setText(QCoreApplication.translate("MainWindow", u"Specular", None))
+        self.ao_map_checkbox.setText(QCoreApplication.translate("MainWindow", u"Ambient Occlusion", None))
         self.Transparent_map_checkbox.setText(QCoreApplication.translate("MainWindow", u"Transparent", None))
         self.label_4.setText(QCoreApplication.translate("MainWindow", u"Settings", None))
         self.label_9.setText(QCoreApplication.translate("MainWindow", u"Sigma_s", None))
@@ -411,6 +422,7 @@ class Ui_MainWindow(object):
         self.preview_2.setText("")
         self.preview_3.setText("")
         self.preview_4.setText("")
+        self.preview_5.setText("")
         self.version_label.setText(QCoreApplication.translate("MainWindow", u"Version", None))
     # retranslateUi
 
