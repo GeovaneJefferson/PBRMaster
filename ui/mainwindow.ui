@@ -18,8 +18,8 @@
   </property>
   <property name="maximumSize">
    <size>
-    <width>1200</width>
-    <height>800</height>
+    <width>16777215</width>
+    <height>16777215</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -28,111 +28,18 @@
   <widget class="QWidget" name="centralwidget">
    <layout class="QHBoxLayout" name="horizontalLayout_2">
     <item>
-     <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,0,0,0,0">
+     <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,0,0">
       <property name="spacing">
        <number>20</number>
       </property>
       <item>
-       <layout class="QVBoxLayout" name="verticalLayout" stretch="0,0,0,0,0,0,0,0,0,0,0">
-        <item alignment="Qt::AlignHCenter">
-         <widget class="QLabel" name="label_8">
-          <property name="font">
-           <font>
-            <bold>true</bold>
-           </font>
-          </property>
-          <property name="text">
-           <string>Set Texture</string>
-          </property>
-         </widget>
-        </item>
+       <layout class="QVBoxLayout" name="verticalLayout" stretch="0,0,0,0">
         <item>
          <widget class="QLabel" name="drag_and_drop_image">
           <property name="text">
            <string/>
           </property>
          </widget>
-        </item>
-        <item alignment="Qt::AlignHCenter">
-         <widget class="QLabel" name="label_2">
-          <property name="text">
-           <string>or</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QPushButton" name="load_texture_btn">
-          <property name="cursor">
-           <cursorShape>PointingHandCursor</cursorShape>
-          </property>
-          <property name="text">
-           <string>Find Texture</string>
-          </property>
-         </widget>
-        </item>
-        <item alignment="Qt::AlignHCenter|Qt::AlignTop">
-         <widget class="QLabel" name="label">
-          <property name="font">
-           <font>
-            <bold>true</bold>
-           </font>
-          </property>
-          <property name="text">
-           <string>Generate</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <layout class="QGridLayout" name="gridLayout">
-          <item row="0" column="1">
-           <widget class="QPushButton" name="stylized_btn">
-            <property name="cursor">
-             <cursorShape>PointingHandCursor</cursorShape>
-            </property>
-            <property name="text">
-             <string>Stylized</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="0">
-           <widget class="QPushButton" name="normal_btn">
-            <property name="font">
-             <font>
-              <bold>false</bold>
-             </font>
-            </property>
-            <property name="cursor">
-             <cursorShape>PointingHandCursor</cursorShape>
-            </property>
-            <property name="whatsThis">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-            </property>
-            <property name="text">
-             <string>Normal</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="0">
-           <widget class="QPushButton" name="pixel_btn">
-            <property name="cursor">
-             <cursorShape>PointingHandCursor</cursorShape>
-            </property>
-            <property name="text">
-             <string>Pixel</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="1">
-           <widget class="QPushButton" name="toon_btn">
-            <property name="cursor">
-             <cursorShape>PointingHandCursor</cursorShape>
-            </property>
-            <property name="text">
-             <string>Toon</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
         </item>
         <item alignment="Qt::AlignHCenter">
          <widget class="QLabel" name="label_6">
@@ -201,226 +108,10 @@
           </property>
          </spacer>
         </item>
-        <item>
-         <widget class="QPushButton" name="update_btn">
-          <property name="cursor">
-           <cursorShape>PointingHandCursor</cursorShape>
-          </property>
-          <property name="text">
-           <string>Update Settings</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QPushButton" name="save_btn">
-          <property name="cursor">
-           <cursorShape>PointingHandCursor</cursorShape>
-          </property>
-          <property name="text">
-           <string>Save Textures</string>
-          </property>
-          <property name="icon">
-           <iconset theme="document-save"/>
-          </property>
-         </widget>
-        </item>
        </layout>
       </item>
       <item>
        <widget class="Line" name="line_12">
-        <property name="orientation">
-         <enum>Qt::Vertical</enum>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <layout class="QGridLayout" name="gridLayout_5" columnstretch="0,0">
-        <item row="10" column="1" alignment="Qt::AlignLeft">
-         <widget class="QSpinBox" name="normal_size_spinbox"/>
-        </item>
-        <item row="2" column="0">
-         <widget class="QLabel" name="label_9">
-          <property name="text">
-           <string>Sigma_s</string>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="0">
-         <widget class="QLabel" name="label_4">
-          <property name="font">
-           <font>
-            <bold>true</bold>
-           </font>
-          </property>
-          <property name="text">
-           <string>Settings</string>
-          </property>
-         </widget>
-        </item>
-        <item row="12" column="0">
-         <widget class="QLabel" name="label_3">
-          <property name="text">
-           <string>Toon Strength</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="1">
-         <widget class="Line" name="line_5">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-         </widget>
-        </item>
-        <item row="10" column="0">
-         <widget class="QLabel" name="label_12">
-          <property name="text">
-           <string>Texture Strength</string>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="1" alignment="Qt::AlignLeft">
-         <widget class="QSpinBox" name="sigma_s_spinbox"/>
-        </item>
-        <item row="3" column="1" alignment="Qt::AlignLeft">
-         <widget class="QSpinBox" name="sigma_r_spinbox"/>
-        </item>
-        <item row="8" column="1" alignment="Qt::AlignLeft">
-         <widget class="QSpinBox" name="transparent_size_spinbox"/>
-        </item>
-        <item row="7" column="0">
-         <widget class="QLabel" name="label_7">
-          <property name="text">
-           <string>Background Color</string>
-          </property>
-         </widget>
-        </item>
-        <item row="5" column="1" alignment="Qt::AlignLeft">
-         <widget class="QSpinBox" name="pixel_size_spinbox"/>
-        </item>
-        <item row="9" column="1">
-         <widget class="Line" name="line_9">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-         </widget>
-        </item>
-        <item row="4" column="1">
-         <widget class="Line" name="line_7">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-         </widget>
-        </item>
-        <item row="9" column="0">
-         <widget class="Line" name="line_8">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-         </widget>
-        </item>
-        <item row="4" column="0">
-         <widget class="Line" name="line_6">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-         </widget>
-        </item>
-        <item row="13" column="0">
-         <spacer name="verticalSpacer_2">
-          <property name="orientation">
-           <enum>Qt::Vertical</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>20</width>
-            <height>40</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item row="5" column="0">
-         <widget class="QLabel" name="label_10">
-          <property name="text">
-           <string>Pixel Size</string>
-          </property>
-         </widget>
-        </item>
-        <item row="12" column="1" alignment="Qt::AlignLeft">
-         <widget class="QSpinBox" name="toon_size_spinbox"/>
-        </item>
-        <item row="1" column="0">
-         <widget class="Line" name="line_4">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-         </widget>
-        </item>
-        <item row="7" column="1" alignment="Qt::AlignLeft">
-         <widget class="QComboBox" name="transparent_comboBox">
-          <property name="cursor">
-           <cursorShape>PointingHandCursor</cursorShape>
-          </property>
-          <property name="currentIndex">
-           <number>0</number>
-          </property>
-          <item>
-           <property name="text">
-            <string>White</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>Black</string>
-           </property>
-          </item>
-         </widget>
-        </item>
-        <item row="6" column="1">
-         <widget class="Line" name="line_3">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-         </widget>
-        </item>
-        <item row="6" column="0">
-         <widget class="Line" name="line_2">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-         </widget>
-        </item>
-        <item row="8" column="0">
-         <widget class="QLabel" name="label_11">
-          <property name="text">
-           <string>Range</string>
-          </property>
-         </widget>
-        </item>
-        <item row="3" column="0">
-         <widget class="QLabel" name="label_5">
-          <property name="text">
-           <string>Sigma_r</string>
-          </property>
-         </widget>
-        </item>
-        <item row="11" column="0">
-         <widget class="Line" name="line_10">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-         </widget>
-        </item>
-        <item row="11" column="1">
-         <widget class="Line" name="line_11">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </item>
-      <item alignment="Qt::AlignHCenter">
-       <widget class="Line" name="line">
         <property name="orientation">
          <enum>Qt::Vertical</enum>
         </property>
@@ -517,15 +208,250 @@
       </item>
      </layout>
     </item>
-    <item alignment="Qt::AlignBottom">
-     <widget class="QLabel" name="version_label">
-      <property name="text">
-       <string>Version</string>
-      </property>
-     </widget>
+    <item>
+     <layout class="QVBoxLayout" name="verticalLayout_4">
+      <item>
+       <layout class="QGridLayout" name="gridLayout_5" columnstretch="0,0">
+        <item row="3" column="1" alignment="Qt::AlignLeft">
+         <widget class="QSpinBox" name="sigma_r_spinbox"/>
+        </item>
+        <item row="6" column="0">
+         <widget class="Line" name="line_2">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="1" alignment="Qt::AlignLeft">
+         <widget class="QSpinBox" name="sigma_s_spinbox"/>
+        </item>
+        <item row="5" column="1" alignment="Qt::AlignLeft">
+         <widget class="QSpinBox" name="pixel_size_spinbox"/>
+        </item>
+        <item row="2" column="0">
+         <widget class="QLabel" name="label_9">
+          <property name="text">
+           <string>Sigma_s</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="1">
+         <widget class="Line" name="line_5">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+         </widget>
+        </item>
+        <item row="7" column="1" alignment="Qt::AlignLeft">
+         <widget class="QComboBox" name="transparent_comboBox">
+          <property name="cursor">
+           <cursorShape>PointingHandCursor</cursorShape>
+          </property>
+          <property name="currentIndex">
+           <number>0</number>
+          </property>
+          <item>
+           <property name="text">
+            <string>White</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Black</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item row="4" column="0">
+         <widget class="Line" name="line_6">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+         </widget>
+        </item>
+        <item row="8" column="0">
+         <widget class="QLabel" name="label_11">
+          <property name="text">
+           <string>Range</string>
+          </property>
+         </widget>
+        </item>
+        <item row="10" column="1" alignment="Qt::AlignLeft">
+         <widget class="QSpinBox" name="normal_size_spinbox"/>
+        </item>
+        <item row="3" column="0">
+         <widget class="QLabel" name="label_5">
+          <property name="text">
+           <string>Sigma_r</string>
+          </property>
+         </widget>
+        </item>
+        <item row="11" column="1">
+         <widget class="Line" name="line_11">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="0">
+         <widget class="QLabel" name="label_4">
+          <property name="font">
+           <font>
+            <bold>true</bold>
+           </font>
+          </property>
+          <property name="text">
+           <string>Settings</string>
+          </property>
+         </widget>
+        </item>
+        <item row="5" column="0">
+         <widget class="QLabel" name="label_10">
+          <property name="text">
+           <string>Pixel Size</string>
+          </property>
+         </widget>
+        </item>
+        <item row="11" column="0">
+         <widget class="Line" name="line_10">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+         </widget>
+        </item>
+        <item row="7" column="0">
+         <widget class="QLabel" name="label_7">
+          <property name="text">
+           <string>Background Color</string>
+          </property>
+         </widget>
+        </item>
+        <item row="6" column="1">
+         <widget class="Line" name="line_3">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+         </widget>
+        </item>
+        <item row="9" column="1">
+         <widget class="Line" name="line_9">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+         </widget>
+        </item>
+        <item row="4" column="1">
+         <widget class="Line" name="line_7">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+         </widget>
+        </item>
+        <item row="10" column="0">
+         <widget class="QLabel" name="label_12">
+          <property name="text">
+           <string>Texture Strength</string>
+          </property>
+         </widget>
+        </item>
+        <item row="9" column="0">
+         <widget class="Line" name="line_8">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="Line" name="line_4">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+         </widget>
+        </item>
+        <item row="8" column="1" alignment="Qt::AlignLeft">
+         <widget class="QSpinBox" name="transparent_size_spinbox"/>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <widget class="QPushButton" name="update_btn">
+        <property name="cursor">
+         <cursorShape>PointingHandCursor</cursorShape>
+        </property>
+        <property name="text">
+         <string>Update Settings</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="verticalSpacer_2">
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>20</width>
+          <height>40</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+     </layout>
     </item>
    </layout>
   </widget>
+  <widget class="QMenuBar" name="menuBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1200</width>
+     <height>24</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuFilters">
+    <property name="title">
+     <string>Generate</string>
+    </property>
+    <addaction name="actionPBR"/>
+    <addaction name="actionStylized"/>
+    <addaction name="actionPixel"/>
+   </widget>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <addaction name="actionOpen_Texture"/>
+    <addaction name="actionSave_New_Textures"/>
+   </widget>
+   <addaction name="menuFile"/>
+   <addaction name="menuFilters"/>
+  </widget>
+  <action name="actionPBR">
+   <property name="text">
+    <string>PBR</string>
+   </property>
+  </action>
+  <action name="actionStylized">
+   <property name="text">
+    <string>Stylized</string>
+   </property>
+  </action>
+  <action name="actionPixel">
+   <property name="text">
+    <string>Pixel</string>
+   </property>
+  </action>
+  <action name="actionOpen_Texture">
+   <property name="text">
+    <string>Open Texture</string>
+   </property>
+  </action>
+  <action name="actionSave_New_Textures">
+   <property name="text">
+    <string>Save New Textures</string>
+   </property>
+  </action>
  </widget>
  <resources/>
  <connections/>
