@@ -11,7 +11,9 @@ from PIL import Image
 from ui.ui_mainwindow import Ui_MainWindow
 
 preview_list = []
-version_number = 'V.0.1'
+big_preview_size = 250
+small_preview_size = 150
+version_number = 'V.0.2'
 
 
 class MainWindow(QMainWindow):
@@ -22,15 +24,15 @@ class MainWindow(QMainWindow):
 
         # Drag And Drop
         self.ui.drag_and_drop_image.setAlignment(Qt.AlignCenter)
-        self.ui.drag_and_drop_image.setText('\n\n Drop Image Here \n\n')
+        self.ui.drag_and_drop_image.setText('\n\n Drop Texture Here \n\n')
         self.ui.drag_and_drop_image.setStyleSheet('''
             QLabel{
                 border: 4px dashed #aaa
             }
         ''')
 
-        self.loaded_image = None
-        self.stylized_image = None
+        self.texture_name = ''
+        self.texture_location = ''
 
         # Version label
         self.ui.version_label.setText(version_number)
@@ -50,15 +52,7 @@ class MainWindow(QMainWindow):
         self.ui.toon_btn.clicked.connect(self.apply_toon)
         self.ui.update_btn.clicked.connect(self.update_preview)
         self.ui.save_btn.clicked.connect(self.save_textures)
-        # self.ui.Transparent_map_checkbox.clicked.connect(self.transparent_clicked)
-        # self.ui.transparent_comboBox.currentIndexChanged.connect(self.transparent_combobox_clicked)
-
-        # Edit Finished
-        # self.ui.sigma_s_spinbox.editingFinished.connect(self.update_from_input)
-        # self.ui.sigma_r_spinbox.editingFinished.connect(self.update_from_input)
-        # self.ui.pixel_size_spinbox.editingFinished.connect(self.apply_pixelization)
-        # self.ui.transparent_size_spinbox.editingFinished.connect(self.update_transparent_range)
-
+   
         # Spin box
         # Sigma s
         self.ui.sigma_s_spinbox.setMinimum(1)
@@ -106,14 +100,32 @@ class MainWindow(QMainWindow):
         self.transparent_color = self.ui.transparent_comboBox.currentText()
 
         # Hide
-        self.ui.stylized_settings.hide()
-        self.ui.pixel_settings.hide()
-        self.ui.transparent_settings.hide()
-        self.ui.normal_settings.hide()
-        self.ui.toon_settings.hide()
+        self.ui.sigma_s_spinbox.setEnabled(False)
+        self.ui.sigma_r_spinbox.setEnabled(False)
+        self.ui.pixel_size_spinbox.setEnabled(False)
+        self.ui.transparent_comboBox.setEnabled(False)
+        self.ui.transparent_size_spinbox.setEnabled(False)
+        self.ui.normal_size_spinbox.setEnabled(False)
+        self.ui.toon_size_spinbox.setEnabled(False)
+
+        self.ui.toon_btn.hide()
         
         # Disable
         self.ui.save_btn.setEnabled(False)
+
+    def reset_ui(self):
+        # Reset all settings
+        self.modifield_image = ''
+        self.file_path = ''
+
+        self.ui.preview_1.setPixmap(QPixmap())
+        self.ui.preview_2.setPixmap(QPixmap())
+        self.ui.preview_3.setPixmap(QPixmap())
+        self.ui.preview_4.setPixmap(QPixmap())
+        self.ui.preview_5.setPixmap(QPixmap())
+        
+        # Delete first 5 previous textures
+        refresh()
 
     def dragEnterEvent(self, event):
         if event.mimeData().hasImage:
@@ -129,29 +141,41 @@ class MainWindow(QMainWindow):
 
     def dropEvent(self, event):
         if event.mimeData().hasImage:
+            self.reset_ui()
+
             event.setDropAction(Qt.CopyAction)
+            # Get file path
             file_path = event.mimeData().urls()[0].toLocalFile()
 
-            # Get file path
+            # Texture informations
             self.file_path = file_path
             
-            if file_path:
-                image_reader = QImageReader(file_path)
+            # Get texture path name
+            self.texture_name = str(self.file_location().split('/')[-1].split('.')[:-1][0])
+            self.texture_location = '/'.join(self.file_location().split('/')[:-1])
+    
+            
+            if self.file_path:
+                image_reader = QImageReader(self.file_path)
                 image_reader.setAutoTransform(True)
 
                 self.loaded_image = QImage(image_reader.read())
 
                 if not self.loaded_image.isNull():
                     pixmap = QPixmap.fromImage(self.loaded_image)
-                    self.ui.selected_image_label.setPixmap(pixmap.scaledToWidth(350, Qt.SmoothTransformation))
+                    self.ui.selected_image_label.setPixmap(
+                        pixmap.scaledToWidth(
+                        big_preview_size, Qt.SmoothTransformation))
                 else:
                     self.ui.selected_image_label.setText("Failed to load image.")
 
             event.accept()
         else:
             event.ignore()
-
+    
     def load_image(self):
+        # self.reset_ui()
+
         options = QFileDialog.Options()
         options |= QFileDialog.ReadOnly
         file_name, _ = QFileDialog.getOpenFileName(
@@ -165,22 +189,31 @@ class MainWindow(QMainWindow):
         self.file_path = file_name
 
         if file_name:
-            image_reader = QImageReader(file_name)
-            image_reader.setAutoTransform(True)
+            # Load image with 16-bit color depth
+            img_16bit = cv2.imread(file_name, cv2.IMREAD_UNCHANGED)
 
-            self.loaded_image = QImage(image_reader.read())
+            # Convert to QImage for display
+            height, width, channel = img_16bit.shape
+            bytes_per_line = channel * width
+            q_image = QImage(img_16bit.data, width, height, bytes_per_line, QImage.Format_RGB16)
 
-            if not self.loaded_image.isNull():
-                pixmap = QPixmap.fromImage(self.loaded_image)
-                self.ui.selected_image_label.setPixmap(pixmap.scaledToWidth(350, Qt.SmoothTransformation))
+            if not q_image.isNull():
+                pixmap = QPixmap.fromImage(q_image)
+                self.ui.selected_image_label.setPixmap(pixmap.scaledToWidth(big_preview_size, Qt.SmoothTransformation))
             else:
                 self.ui.selected_image_label.setText("Failed to load image.")
-       
-       # Reset all settings
-        self.modifield_image = ''
-        self.ui.preview_1.setPixmap(QPixmap())
-        self.ui.preview_2.setPixmap(QPixmap())
-        self.ui.preview_3.setPixmap(QPixmap())
+    
+    def file_location(self):
+        # Get texture path name
+        self.texture_name = self.file_path.split('/')[-1].split('.')[:-1][0]
+        self.texture_location = '/'.join(self.file_path.split('/')[:-1])
+        return f'{self.texture_location}/.{self.texture_name}'
+    
+    def loading(self):
+        self.setCursor(Qt.WaitCursor)
+    
+    def done(self):
+        self.unsetCursor()
 
     # Generate
     def update_preview(self):
@@ -202,115 +235,7 @@ class MainWindow(QMainWindow):
              
         self.done() 
 
-    # Get file location
-    def file_location(self):
-        # Get texture path name
-        self.texture_name = self.file_path.split('/')[-1].split('.')[:-1][0]
-        self.texture_location = '/'.join(self.file_path.split('/')[:-1])
-        return f'{self.texture_location}/.{self.texture_name}'
-    
-    def loading(self):
-        self.setCursor(Qt.WaitCursor)
-    
-    def done(self):
-        self.unsetCursor()
 
-    # Save
-    def save_textures(self):
-        # if '_Color' not in self.file_path:
-        # Check if the file exists before renaming
-        if os.path.exists(f'{self.texture_location}/.{self.texture_name}_Color.png'):
-            os.rename(f'{self.texture_location}/.{self.texture_name}_Color.png', f'{self.texture_location}/{self.texture_name}_Color.png')
-        
-        # Check if the file exists before renaming
-        if os.path.exists(f'{self.texture_location}/.{self.texture_name}_Normal.png'):
-            os.rename(f'{self.texture_location}/.{self.texture_name}_Normal.png', f'{self.texture_location}/{self.texture_name}_Normal.png')
-
-        # Check if the file exists before renaming
-        if os.path.exists(f'{self.texture_location}/.{self.texture_name}_Roughness.png'):
-            os.rename(f'{self.texture_location}/.{self.texture_name}_Roughness.png', f'{self.texture_location}/{self.texture_name}_Roughness.png')
-        
-        # Check if the file exists before renaming
-        if os.path.exists(f'{self.texture_location}/.{self.texture_name}_Specular.png'):
-            os.rename(f'{self.texture_location}/.{self.texture_name}_Specular.png', f'{self.texture_location}/{self.texture_name}_Specular.png')
-
-        # Open direectory
-        system = platform.system().lower()
-        if system == 'linux':
-            sub.run(['xdg-open', self.texture_location])
-        elif system == 'darwin':  # macOS
-            sub.run(['open', self.texture_location])
-        elif system == 'windows':
-            os.startfile(self.texture_location)
-        else:
-            print("Unsupported operating system")
-    
-    def xxx(self, coordinates, type):
-        img = Image.fromarray(coordinates)
-        preview_size = 200
-        
-        # Get texture path name
-        self.texture_name = self.file_location().split('/')[-1].split('.')[:-1][0]
-        texture_location = '/'.join(self.file_location().split('/')[:-1])
-
-        # Normal
-        if type == 'Normal':
-            img.save(f'{texture_location}/.{self.texture_name}_{type}.png')
-
-            # Add to added list
-            if f'{texture_location}/.{self.texture_name}_{type}.png' not in preview_list:
-                preview_list.append(f'{texture_location}/.{self.texture_name}_{type}.png')
-            
-            # Add to preview
-            pixmap = QPixmap(preview_list[1])
-            self.ui.preview_2.setPixmap(pixmap.scaledToWidth(preview_size))
-
-        # Roughness
-        elif type == 'Roughness':
-            img.save(f'{texture_location}/.{self.texture_name}_{type}.png')
-
-            # Add to added list
-            if f'{texture_location}/.{self.texture_name}_{type}.png' not in preview_list:
-                preview_list.append(f'{texture_location}/.{self.texture_name}_{type}.png')
-            
-            # Add to preview
-            pixmap = QPixmap(preview_list[2])
-            self.ui.preview_3.setPixmap(pixmap.scaledToWidth(preview_size))
-
-        # Specular
-        elif type == 'Specular':
-            img.save(f'{texture_location}/.{self.texture_name}_specular.png')
-
-            # Add to added list
-            if f'{texture_location}/.{self.texture_name}_specular.png' not in preview_list:
-                preview_list.append(f'{texture_location}/.{self.texture_name}_specular.png')
-            
-            # Add to preview
-            pixmap = QPixmap(preview_list[3])
-            self.ui.preview_4.setPixmap(pixmap.scaledToWidth(preview_size))
-        
-        # Ambient Occlusion
-        elif type == 'AO':
-            img.save(f'{texture_location}/.{self.texture_name}_ambient_occlusion.png')
-            
-            # Add to added list
-            if f'{texture_location}/.{self.texture_name}_ambient_occlusion.png' not in preview_list:
-                preview_list.append(f'{texture_location}/.{self.texture_name}_ambient_occlusion.png')
-            
-            # Add to preview
-            pixmap = QPixmap(preview_list[4])
-            self.ui.preview_5.setPixmap(pixmap.scaledToWidth(preview_size))
-        
-        # Transparent
-        elif type == 'Transparent':
-            img.save(f'{texture_location}/.{self.texture_name}_{type}.png')
-
-            # Add to added list
-            if f'{texture_location}/.{self.texture_name}_{type}.png' not in preview_list:
-                preview_list.append(f'{texture_location}/.{self.texture_name}_{type}.png')
-       
-
-    # STYLIZATION 
     def apply_stylization(self):
         self.loading()
      
@@ -321,11 +246,15 @@ class MainWindow(QMainWindow):
         
         # Enable buttons
         self.ui.save_btn.setEnabled(True)
+       
         # Hide
-        self.ui.stylized_settings.show()
-        self.ui.pixel_settings.hide()
-        self.ui.normal_settings.hide()
-        self.ui.toon_settings.hide()
+        self.ui.sigma_s_spinbox.setEnabled(True)
+        self.ui.sigma_r_spinbox.setEnabled(True)
+        self.ui.pixel_size_spinbox.setEnabled(False)
+        self.ui.transparent_comboBox.setEnabled(False)
+        self.ui.transparent_size_spinbox.setEnabled(False)
+        self.ui.normal_size_spinbox.setEnabled(False)
+        self.ui.toon_size_spinbox.setEnabled(False)
         
         # Read the input image
         img = cv2.imread(self.modifield_image)
@@ -339,51 +268,40 @@ class MainWindow(QMainWindow):
                                         sigma_r=self.sigma_r_value)
 
         cv2.imwrite(
-            f'{self.file_location()}_Color.png',
+            f'{self.file_location()}_color.png',
             cv2.cvtColor(stylized_image,
             cv2.COLOR_RGB2BGR))
         
         # Add to added list
-        if f'{self.file_location()}_Color.png' not in preview_list:
-            preview_list.append(f'{self.file_location()}_Color.png')
+        if f'{self.file_location()}_color.png' not in preview_list:
+            preview_list.append(f'{self.file_location()}_color.png')
 
         # Preview 1
-        pixmap = QPixmap.fromImage(QImage(f'{self.file_location()}_Color.png'))
-        self.ui.preview_1.setPixmap(pixmap.scaledToWidth(350))
+        pixmap = QPixmap.fromImage(QImage(f'{self.file_location()}_color.png'))
+        self.ui.preview_1.setPixmap(pixmap.scaledToWidth(big_preview_size))
 
         # Unlock stylized settings
-        self.ui.stylized_settings.show()
+        # self.ui.stylized_settings.setEnabled(True)
         
-        self.create_normal_map()
+        self.generate_maps()
 
         self.done()
     
-    def update_stylization(self):
-        try:
-            self.sigma_s_value = self.ui.sigma_s_spinbox.value()
-            self.sigma_r_value = self.ui.sigma_r_spinbox.value()  # Assuming sigma_r still uses a QSlider
-            
-            self.sigma_s_value = int(self.ui.sigma_s_spinbox.text())
-            self.ui.sigma_s_spinbox.setValue(self.sigma_s_value)
-                
-            self.sigma_r_value = int(self.ui.sigma_r_spinbox.text())
-            self.ui.sigma_r_spinbox.setValue(self.sigma_r_value)
-        except ValueError:
-            pass
-    
-     # Pixelization 
-    
-    # PIXELIZATION
     def apply_pixelization(self):
         self.choosed_style = 'pixel'
+
         # Enable buttons
         self.ui.save_btn.setEnabled(True)
         
-        # Hide
-        self.ui.normal_settings.hide()
-        self.ui.stylized_settings.hide()
-        self.ui.toon_settings.hide()
-
+        # # Hide
+        self.ui.sigma_s_spinbox.setEnabled(False)
+        self.ui.sigma_r_spinbox.setEnabled(False)
+        self.ui.pixel_size_spinbox.setEnabled(True)
+        self.ui.transparent_comboBox.setEnabled(False)
+        self.ui.transparent_size_spinbox.setEnabled(False)
+        self.ui.normal_size_spinbox.setEnabled(True)
+        self.ui.toon_size_spinbox.setEnabled(False)
+        
         if self.loaded_image is not None:
             # Convert QImage to PIL Image
             pil_image = Image.fromqpixmap(self.loaded_image)
@@ -399,37 +317,38 @@ class MainWindow(QMainWindow):
                 Image.NEAREST)
 
             # Temp Save image 
-            pixelated_image.save(f'{self.file_location()}_Color.png')
-            self.modifield_image = f'{self.file_location()}_Color.png'
+            pixelated_image.save(f'{self.file_location()}_color.png')
+            self.modifield_image = f'{self.file_location()}_color.png'
 
             # Add to added list
-            if f'{self.file_location()}_Color.png' not in preview_list:
-                preview_list.append(f'{self.file_location()}_Color.png')
+            if f'{self.file_location()}_color.png' not in preview_list:
+                preview_list.append(f'{self.file_location()}_color.png')
 
             # Convert PIL Image to QImage
             q_image = QImage(pixelated_image.tobytes(), pixelated_image.width, pixelated_image.height, pixelated_image.width * 3, QImage.Format_RGB888)
+            
             # Preview 1
             pixmap = QPixmap.fromImage(q_image)
+            
             # Save informations
             self.saved_pixel_image = pixmap.scaledToWidth(self.ui.selected_image_label.width())
+           
             # Add to label
-            self.ui.preview_1.setPixmap(pixmap.scaledToWidth(350))
+            self.ui.preview_1.setPixmap(pixmap.scaledToWidth(big_preview_size))
             
-            # Unlock stylized settings
-            self.ui.pixel_settings.show()
-            
-            self.create_normal_map()
+            self.generate_maps()
 
-    # TOON
     def apply_toon(self):
         self.choosed_style = 'toon'
 
         # Hide
-        self.ui.normal_settings.hide()
-        self.ui.stylized_settings.hide()
-
-        # Enable buttons
-        self.ui.toon_settings.show()
+        self.ui.sigma_s_spinbox.setEnabled(False)
+        self.ui.sigma_r_spinbox.setEnabled(False)
+        self.ui.pixel_size_spinbox.setEnabled(False)
+        self.ui.transparent_comboBox.setEnabled(False)
+        self.ui.transparent_size_spinbox.setEnabled(False)
+        self.ui.normal_size_spinbox.setEnabled(True)
+        self.ui.toon_size_spinbox.setEnabled(True)
         
         # Read the input image
         img = cv2.imread(self.file_path)
@@ -450,60 +369,74 @@ class MainWindow(QMainWindow):
 
         # Save the result
         cv2.imwrite(
-            f'{self.file_location()}_Color.png',
+            f'{self.file_location()}_color.png',
             cv2.cvtColor(cartoon,
             cv2.COLOR_RGB2BGR))
-               # Add to added list
         
-        if f'{self.file_location()}_Color.png' not in preview_list:
-            preview_list.append(f'{self.file_location()}_Color.png')
+        # Add to added list
+        if f'{self.file_location()}_color.png' not in preview_list:
+            preview_list.append(f'{self.file_location()}_color.png')
 
         # Preview 1
-        pixmap = QPixmap.fromImage(QImage(f'{self.file_location()}_Color.png'))
-        self.ui.preview_1.setPixmap(pixmap.scaledToWidth(350))
+        pixmap = QPixmap.fromImage(QImage(f'{self.file_location()}_color.png'))
+        self.ui.preview_1.setPixmap(pixmap.scaledToWidth(big_preview_size))
         
-        self.create_normal_map()
+        self.generate_maps()
     
-    # NORMAL
     def apply_normal(self):
         self.choosed_style = 'normal'
-        self.modifield_image = self.file_path
+        # self.modifield_image = self.file_path
 
         # Hide
-        self.ui.stylized_settings.hide()
-        self.ui.pixel_settings.hide()
-        self.ui.toon_settings.hide()
-
+        self.ui.sigma_s_spinbox.setEnabled(False)
+        self.ui.sigma_r_spinbox.setEnabled(False)
+        self.ui.pixel_size_spinbox.setEnabled(False)
+        self.ui.transparent_comboBox.setEnabled(False)
+        self.ui.transparent_size_spinbox.setEnabled(False)
+        self.ui.normal_size_spinbox.setEnabled(True)
+        self.ui.toon_size_spinbox.setEnabled(False)
+        
         # Add to added list
-        if f'{self.file_location()}_Color.png' not in preview_list:
-            preview_list.append(f'{self.file_location()}_Color.png')
+        if f'{self.file_location()}_color.png' not in preview_list:
+            preview_list.append(f'{self.file_location()}_color.png')
         
         pil_image = Image.fromqpixmap(self.loaded_image)
-        pil_image.save(f'{self.file_location()}_Color.png')
+        pil_image.save(f'{self.file_location()}_color.png')
 
         # Preview 1
-        pixmap = QPixmap.fromImage(QImage(f'{self.file_location()}_Color.png'))
-        self.ui.preview_1.setPixmap(pixmap.scaledToWidth(350))
+        pixmap = QPixmap.fromImage(QImage(f'{self.file_location()}_color.png'))
+        self.ui.preview_1.setPixmap(pixmap.scaledToWidth(big_preview_size))
 
-        self.create_normal_map()
-        # Clean preview 1
-        # self.ui.preview_1.setPixmap(QPixmap())
-          
-        # Unlock normal settings
-        self.ui.normal_settings.show()
-    
+        self.generate_maps()
+ 
+
+    # UPDATES
     def update_pixelization(self):
         try:
             self.pixel_size_value = self.ui.pixel_size_spinbox.value()
         except ValueError:
             pass
     
-    # UPDATES
     def update_normal(self):
         try:
             self.normal_size_value = self.ui.normal_size_spinbox.value()
         except ValueError:
             pass
+    
+    def update_stylization(self):
+        try:
+            self.sigma_s_value = self.ui.sigma_s_spinbox.value()
+            self.sigma_r_value = self.ui.sigma_r_spinbox.value()  # Assuming sigma_r still uses a QSlider
+            
+            self.sigma_s_value = int(self.ui.sigma_s_spinbox.text())
+            self.ui.sigma_s_spinbox.setValue(self.sigma_s_value)
+                
+            self.sigma_r_value = int(self.ui.sigma_r_spinbox.text())
+            self.ui.sigma_r_spinbox.setValue(self.sigma_r_value)
+        except ValueError:
+            pass
+    
+     # Pixelization 
     
     def update_toon(self):
         try:
@@ -511,33 +444,36 @@ class MainWindow(QMainWindow):
         except ValueError:
             pass
      
-    def create_normal_map(self):
+    def generate_maps(self):
         self.loading()
 
         self.ui.save_btn.setEnabled(True)
         
         # Get texture path name
         self.texture_name = self.file_location().split('/')[-1].split('.')[:-1][0]
-        texture_location = '/'.join(self.file_location().split('/')[:-1])
+        self.texture_location = '/'.join(self.file_location().split('/')[:-1])
 
-        self.modifield_image2 = f'{texture_location}/.{self.texture_name}_Color.png'
+        self.new_color_generated_image = f'{self.texture_location}/.{self.texture_name}_color.png'
 
         # NORMAL MAP
         if self.ui.normal_map_checkbox.isChecked():
             # Load the texture image in grayscale
-            texture = cv2.imread(self.modifield_image2, cv2.IMREAD_GRAYSCALE)
+            texture = cv2.imread(self.new_color_generated_image, cv2.IMREAD_GRAYSCALE)
 
             # Calculate gradients using the Sobel operator
             gradient_x = cv2.Sobel(texture, cv2.CV_64F, 1, 0, ksize=3)
             gradient_y = cv2.Sobel(texture, cv2.CV_64F, 0, 1, ksize=3)
 
-            # Calculate the normal map from gradients
+            # Set a scaling factor for the normal values (adjust as needed)
+            scaling_factor = 0.2
+
+            # Calculate the normal map from gradients with scaling
             normal_map = np.zeros((texture.shape[0], texture.shape[1], 3), dtype=np.uint8)
             for y in range(texture.shape[0]):
                 for x in range(texture.shape[1]):
-                    nx = self.normal_size_value * gradient_x[y, x] / 255.0
-                    ny = self.normal_size_value * gradient_y[y, x] / 255.0
-                    nz = 1.0 - self.normal_size_value * np.sqrt(nx**2 + ny**2)
+                    nx = -scaling_factor * self.normal_size_value * gradient_x[y, x] / 255.0  # Invert the sign
+                    ny = -scaling_factor * self.normal_size_value * gradient_y[y, x] / 255.0  # Invert the sign
+                    nz = 1.0 + scaling_factor * self.normal_size_value * np.sqrt(nx**2 + ny**2)  # Invert the sign
 
                     normal = np.array([nx, ny, nz])
                     normal /= np.linalg.norm(normal)
@@ -547,14 +483,14 @@ class MainWindow(QMainWindow):
                     b = int(255 * (0.5 + 0.5 * normal[2]))
 
                     normal_map[y, x] = [r, g, b]
-            
-            self.xxx(normal_map, 'Normal')
-        
+
+            self.show_preview(normal_map, 'normal')
+
         # ROUGHNESS MAP
         if self.ui.roughness_map_checkbox.isChecked():
             # ROUGNESS
             # Load the texture image in grayscale
-            texture = cv2.imread(self.modifield_image2, cv2.IMREAD_GRAYSCALE)
+            texture = cv2.imread(self.new_color_generated_image, cv2.IMREAD_GRAYSCALE)
 
             # Calculate gradients using the Sobel operator
             gradient_x = cv2.Sobel(texture, cv2.CV_64F, 1, 0, ksize=3)
@@ -574,12 +510,12 @@ class MainWindow(QMainWindow):
                     roughness_value = int(roughness * 255)
                     roughness_map[y, x] = roughness_value
 
-            self.xxx(roughness_map, 'Roughness')
+            self.show_preview(roughness_map, 'roughness')
         
         if self.ui.specular_map_checkbox.isChecked():
             # SPECULAR
             # Load the texture image in grayscale
-            texture = cv2.imread(self.modifield_image2, cv2.IMREAD_GRAYSCALE)
+            texture = cv2.imread(self.new_color_generated_image, cv2.IMREAD_GRAYSCALE)
 
             # Normalize the texture to the range [0, 1]
             texture_normalized = texture / 255.0
@@ -588,7 +524,7 @@ class MainWindow(QMainWindow):
             specular_map = (texture_normalized ** self.normal_size_value) * 255.0
 
             # return specular_map.astype(np.uint8)
-            self.xxx(specular_map.astype(np.uint8), 'Specular')
+            self.show_preview(specular_map.astype(np.uint8), 'specular')
         
         # AMBIENT OCCLUSION
         if self.ui.ao_map_checkbox.isChecked():
@@ -606,7 +542,7 @@ class MainWindow(QMainWindow):
             # Invert the values to create ambient occlusion
             ambient_occlusion_map = self.normal_size_value - normalized_texture
 
-            self.xxx((ambient_occlusion_map * 255).astype(np.uint8), 'AO')
+            self.show_preview((ambient_occlusion_map * 255).astype(np.uint8), 'ao')
 
         if self.ui.Transparent_map_checkbox.isChecked():
             # Remove Background
@@ -614,34 +550,180 @@ class MainWindow(QMainWindow):
 
             # Get texture path name
             self.texture_name = self.file_path.split('/')[-1].split('.')[:-1][0]
-            texture_location = '/'.join(self.file_path.split('/')[:-1])
+            self.texture_location = '/'.join(self.file_path.split('/')[:-1])
 
             # Add to added list
-            if f'{texture_location}/.{self.texture_name}_Transparent.png' not in preview_list:
-                preview_list.append(f'{texture_location}/.{self.texture_name}_Transparent.png')
+            if f'{self.texture_location}/.{self.texture_name}_Transparent.png' not in preview_list:
+                preview_list.append(f'{self.texture_location}/.{self.texture_name}_Transparent.png')
             
             # Add to preview
             pixmap = QPixmap(preview_list[0])
             self.ui.preview_1.setPixmap(pixmap)
 
         self.done()
+    
+    def show_preview(self, coordinates, type):
+        img = Image.fromarray(coordinates)
+        current_image = f'{self.texture_location}/.{self.texture_name}_{type}.png'
+        
+        scaledHTML='width:"5%" height="550"'
+        # Hover preview
+        self.ui.preview_1.setToolTip(
+            f"<img src={self.new_color_generated_image} {scaledHTML}/>")
+            
+        # Normal
+        if type == 'normal':
+            # Save texture as hidden file
+            img.save(f'{self.texture_location}/.{self.texture_name}_{type}.png')
 
+            # Add to added list
+            if f'{self.texture_location}/.{self.texture_name}_{type}.png' not in preview_list:
+                preview_list.append(f'{self.texture_location}/.{self.texture_name}_{type}.png')
+            
+            # Add to preview
+            # pixmap = QPixmap(preview_list[1])
+            pixmap = QPixmap(current_image)
+            self.ui.preview_2.setPixmap(pixmap.scaledToWidth(small_preview_size))
+            
+            # Hover preview
+            self.ui.preview_2.setToolTip(
+                f"<img src={current_image} {scaledHTML}/>")
+            
+        # Roughness
+        elif type == 'roughness':
+            img.save(f'{self.texture_location}/.{self.texture_name}_{type}.png')
+
+            # Add to added list
+            if f'{self.texture_location}/.{self.texture_name}_{type}.png' not in preview_list:
+                preview_list.append(f'{self.texture_location}/.{self.texture_name}_{type}.png')
+            
+            # Add to preview
+            # pixmap = QPixmap(preview_list[2])
+            pixmap = QPixmap(current_image)
+            self.ui.preview_3.setPixmap(pixmap.scaledToWidth(small_preview_size))
+            
+            # Hover preview
+            self.ui.preview_3.setToolTip(
+                f"<img src={current_image} {scaledHTML}/>")
+            
+        # Specular
+        elif type == 'specular':
+            img.save(f'{self.texture_location}/.{self.texture_name}_specular.png')
+
+            # Add to added list
+            if f'{self.texture_location}/.{self.texture_name}_specular.png' not in preview_list:
+                preview_list.append(f'{self.texture_location}/.{self.texture_name}_specular.png')
+            
+            # Add to preview
+            # pixmap = QPixmap(preview_list[3])
+            pixmap = QPixmap(current_image)
+            self.ui.preview_4.setPixmap(pixmap.scaledToWidth(small_preview_size))
+            
+            # Hover preview
+            self.ui.preview_4.setToolTip(
+                f"<img src={current_image} {scaledHTML}/>")
+            
+        # Ambient Occlusion
+        elif type == 'ao':
+            img.save(f'{self.texture_location}/.{self.texture_name}_ambient_occlusion.png')
+            
+            # Add to added list
+            if f'{self.texture_location}/.{self.texture_name}_ambient_occlusion.png' not in preview_list:
+                preview_list.append(f'{self.texture_location}/.{self.texture_name}_ambient_occlusion.png')
+            
+            # Add to preview
+            # pixmap = QPixmap(preview_list[4])
+            pixmap = QPixmap(current_image)
+            self.ui.preview_5.setPixmap(pixmap.scaledToWidth(small_preview_size))
+            
+            # Hover preview
+            self.ui.preview_5.setToolTip(
+                f"<img src={current_image} {scaledHTML}/>")
+            
+        # Transparent
+        elif type == 'Transparent':
+            img.save(f'{self.texture_location}/.{self.texture_name}_{type}.png')
+
+            # Add to added list
+            if f'{self.texture_location}/.{self.texture_name}_{type}.png' not in preview_list:
+                preview_list.append(f'{self.texture_location}/.{self.texture_name}_{type}.png')
+        
+    # Save
+    def save_textures(self):
+        # if '_Color' not in self.file_path:
+        # Check if the file exists before renaming
+        if os.path.exists(f'{self.texture_location}/.{self.texture_name}_color.png'):
+            os.rename(f'{self.texture_location}/.{self.texture_name}_color.png', f'{self.texture_location}/{self.texture_name}_color.png')
+        
+        # Check if the file exists before renaming
+        if os.path.exists(f'{self.texture_location}/.{self.texture_name}_normal.png'):
+            os.rename(
+            f'{self.texture_location}/.{self.texture_name}_normal.png', 
+            f'{self.texture_location}/{self.texture_name}_normal.png')
+
+        # Check if the file exists before renaming
+        if os.path.exists(f'{self.texture_location}/.{self.texture_name}_roughness.png'):
+            os.rename(
+            f'{self.texture_location}/.{self.texture_name}_roughness.png', 
+            f'{self.texture_location}/{self.texture_name}_roughness.png')
+        
+        # Check if the file exists before renaming
+        if os.path.exists(f'{self.texture_location}/.{self.texture_name}_specular.png'):
+            os.rename(
+            f'{self.texture_location}/.{self.texture_name}_specular.png', 
+            f'{self.texture_location}/{self.texture_name}_specular.png')
+        
+        # Check if the file exists before renaming
+        if os.path.exists(f'{self.texture_location}/.{self.texture_name}_ambient_occlusion.png'):
+            os.rename(
+                f'{self.texture_location}/.{self.texture_name}_ambient_occlusion.png', 
+                f'{self.texture_location}/{self.texture_name}_ambient_occlusion.png')
+
+        # Open direectory
+        system = platform.system().lower()
+        if system == 'linux':
+            sub.run(['xdg-open', self.texture_location])
+        elif system == 'darwin':  # macOS
+            sub.run(['open', self.texture_location])
+        elif system == 'windows':
+            os.startfile(self.texture_location)
+        else:
+            print("Unsupported operating system")
+    
+    def add_to_list(self, type):
+        # Get texture path name
+        self.texture_name = str(self.file_location().split('/')[-1].split('.')[:-1][0])
+        self.texture_location = '/'.join(self.file_location().split('/')[:-1])
+
+        # Add to added list
+        if f'{self.texture_location}/.{self.texture_name}_{type}.png' not in preview_list:
+            preview_list.append(f'{self.texture_location}/.{self.texture_name}_{type}.png')
+            
+ 
 def on_about_to_quit():
     # Delete preview
     for i in range(len(preview_list)):
-        print('Deleting',preview_list[i])
         try:
+            print('Deleting', preview_list[i])
             os.remove(preview_list[i])
         except FileNotFoundError:
             pass
 
+def refresh():
+    # Delete preview
+    for i in range(len(preview_list)):
+        try:
+            os.remove(preview_list[i])
+        except Exception as e:
+            print(e)
+            pass
 
-if __name__ == "__main__":
+
+if __name__ == "__main__": 
     app = QApplication([])
     window = MainWindow()
     window.setWindowTitle('Texture Generator')
-    window.setFixedHeight(800)
-    window.setFixedWidth(1200)
+    window.showMaximized()
     window.show()
 
     app.aboutToQuit.connect(on_about_to_quit)
