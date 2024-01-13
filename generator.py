@@ -11,8 +11,8 @@ from PIL import Image
 from ui.ui_mainwindow import Ui_MainWindow
 
 preview_list = []
-big_preview_size = 250
-small_preview_size = 150
+big_preview_size = 350
+small_preview_size = 200
 version_number = 'V.0.2'
 
 
@@ -61,7 +61,6 @@ class MainWindow(QMainWindow):
         # Generate
         self.ui.actionPBR.triggered.connect(self.apply_normal)
         self.ui.actionStylized.triggered.connect(self.apply_stylization)
-        self.ui.actionStylized.triggered.connect(self.apply_stylization)
         self.ui.actionPixel.triggered.connect(self.apply_pixelization)
    
         # Spin box
@@ -86,7 +85,7 @@ class MainWindow(QMainWindow):
         # Normal Size
         self.ui.normal_size_spinbox.setMinimum(1)
         self.ui.normal_size_spinbox.setMaximum(100)
-        self.ui.normal_size_spinbox.setValue(2)
+        self.ui.normal_size_spinbox.setValue(5)
         self.ui.normal_size_spinbox.valueChanged.connect(self.update_normal)
       
         # Transparent Size
@@ -263,7 +262,7 @@ class MainWindow(QMainWindow):
         self.ui.pixel_size_spinbox.setEnabled(False)
         self.ui.transparent_comboBox.setEnabled(False)
         self.ui.transparent_size_spinbox.setEnabled(False)
-        self.ui.normal_size_spinbox.setEnabled(False)
+        self.ui.normal_size_spinbox.setEnabled(True)
         
         # Read the input image
         img = cv2.imread(self.modifield_image)
@@ -743,7 +742,7 @@ def refresh():
 if __name__ == "__main__": 
     app = QApplication([])
     window = MainWindow()
-    window.setWindowTitle('PBR Generator')
+    window.setWindowTitle('PBRMaster')
     window.showMaximized()
     window.show()
 
