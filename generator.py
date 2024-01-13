@@ -111,6 +111,7 @@ class MainWindow(QMainWindow):
         self.ui.normal_size_spinbox.setEnabled(False)
 
         # self.ui.toon_btn.hide()
+        self.ui.Transparent_map_checkbox.hide()
         
         # Disable
         # # self.ui.save_btn.setEnabled(False)
