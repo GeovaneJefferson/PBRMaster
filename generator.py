@@ -13,7 +13,7 @@ from ui.ui_mainwindow import Ui_MainWindow
 preview_list = []
 big_preview_size = 350
 small_preview_size = 200
-version_number = 'V.0.2'
+version_number = 'V.0.3'
 
 
 class MainWindow(QMainWindow):
@@ -73,7 +73,7 @@ class MainWindow(QMainWindow):
         # Sigma r
         self.ui.sigma_r_spinbox.setMinimum(1)
         self.ui.sigma_r_spinbox.setMaximum(100)
-        self.ui.sigma_r_spinbox.setValue(1)
+        self.ui.sigma_r_spinbox.setValue(2)
         self.ui.sigma_r_spinbox.valueChanged.connect(self.update_stylization)
 
         # Pixel Size
@@ -109,6 +109,7 @@ class MainWindow(QMainWindow):
         self.ui.transparent_comboBox.setEnabled(False)
         self.ui.transparent_size_spinbox.setEnabled(False)
         self.ui.normal_size_spinbox.setEnabled(False)
+        self.ui.normal_mode.setEnabled(False)
 
         # self.ui.toon_btn.hide()
         self.ui.Transparent_map_checkbox.hide()
@@ -264,6 +265,7 @@ class MainWindow(QMainWindow):
         self.ui.transparent_comboBox.setEnabled(False)
         self.ui.transparent_size_spinbox.setEnabled(False)
         self.ui.normal_size_spinbox.setEnabled(True)
+        self.ui.normal_mode.setEnabled(True)
         
         # Read the input image
         img = cv2.imread(self.modifield_image)
@@ -309,6 +311,7 @@ class MainWindow(QMainWindow):
         self.ui.transparent_comboBox.setEnabled(False)
         self.ui.transparent_size_spinbox.setEnabled(False)
         self.ui.normal_size_spinbox.setEnabled(True)
+        self.ui.normal_mode.setEnabled(True)
         
         if self.loaded_image is not None:
             # Convert QImage to PIL Image
@@ -346,49 +349,50 @@ class MainWindow(QMainWindow):
             
             self.generate_maps()
 
-    def apply_toon(self):
-        self.choosed_style = 'toon'
+    # def apply_toon(self):
+    #     self.choosed_style = 'toon'
 
-        # Hide
-        self.ui.sigma_s_spinbox.setEnabled(False)
-        self.ui.sigma_r_spinbox.setEnabled(False)
-        self.ui.pixel_size_spinbox.setEnabled(False)
-        self.ui.transparent_comboBox.setEnabled(False)
-        self.ui.transparent_size_spinbox.setEnabled(False)
-        self.ui.normal_size_spinbox.setEnabled(True)
+    #     # Hide
+    #     self.ui.sigma_s_spinbox.setEnabled(False)
+    #     self.ui.sigma_r_spinbox.setEnabled(False)
+    #     self.ui.pixel_size_spinbox.setEnabled(False)
+    #     self.ui.transparent_comboBox.setEnabled(False)
+    #     self.ui.transparent_size_spinbox.setEnabled(False)
+    #     self.ui.normal_size_spinbox.setEnabled(True)
+    #     self.ui.normal_mode.setEnabled(False)
         
-        # Read the input image
-        img = cv2.imread(self.file_path)
+    #     # Read the input image
+    #     img = cv2.imread(self.file_path)
 
-        # Convert the image to grayscale
-        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    #     # Convert the image to grayscale
+    #     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
-        # Apply bilateral filter to smooth the image while preserving edges
-        smooth = cv2.bilateralFilter(gray, self.toon_size_value, 300, 75)
+    #     # Apply bilateral filter to smooth the image while preserving edges
+    #     smooth = cv2.bilateralFilter(gray, self.toon_size_value, 300, 75)
 
-        # Apply edge detection using adaptive thresholding
-        edges = cv2.adaptiveThreshold(smooth, 255,
-                                    cv2.ADAPTIVE_THRESH_MEAN_C,
-                                    cv2.THRESH_BINARY, 9, 9)
+    #     # Apply edge detection using adaptive thresholding
+    #     edges = cv2.adaptiveThreshold(smooth, 255,
+    #                                 cv2.ADAPTIVE_THRESH_MEAN_C,
+    #                                 cv2.THRESH_BINARY, 9, 9)
 
-        # Combine the edges with the original image using bitwise_and
-        cartoon = cv2.bitwise_and(img, img, mask=edges)
+    #     # Combine the edges with the original image using bitwise_and
+    #     cartoon = cv2.bitwise_and(img, img, mask=edges)
 
-        # Save the result
-        cv2.imwrite(
-            f'{self.file_location()}_color.png',
-            cv2.cvtColor(cartoon,
-            cv2.COLOR_RGB2BGR))
+    #     # Save the result
+    #     cv2.imwrite(
+    #         f'{self.file_location()}_color.png',
+    #         cv2.cvtColor(cartoon,
+    #         cv2.COLOR_RGB2BGR))
         
-        # Add to added list
-        if f'{self.file_location()}_color.png' not in preview_list:
-            preview_list.append(f'{self.file_location()}_color.png')
+    #     # Add to added list
+    #     if f'{self.file_location()}_color.png' not in preview_list:
+    #         preview_list.append(f'{self.file_location()}_color.png')
 
-        # Preview 1
-        pixmap = QPixmap.fromImage(QImage(f'{self.file_location()}_color.png'))
-        self.ui.preview_1.setPixmap(pixmap.scaledToWidth(big_preview_size))
+    #     # Preview 1
+    #     pixmap = QPixmap.fromImage(QImage(f'{self.file_location()}_color.png'))
+    #     self.ui.preview_1.setPixmap(pixmap.scaledToWidth(big_preview_size))
         
-        self.generate_maps()
+    #     self.generate_maps()
     
     def apply_normal(self):
         self.choosed_style = 'normal'
@@ -401,6 +405,7 @@ class MainWindow(QMainWindow):
         self.ui.transparent_comboBox.setEnabled(False)
         self.ui.transparent_size_spinbox.setEnabled(False)
         self.ui.normal_size_spinbox.setEnabled(True)
+        self.ui.normal_mode.setEnabled(True)
         
         # Add to added list
         if f'{self.file_location()}_color.png' not in preview_list:
@@ -477,9 +482,16 @@ class MainWindow(QMainWindow):
             normal_map = np.zeros((texture.shape[0], texture.shape[1], 3), dtype=np.uint8)
             for y in range(texture.shape[0]):
                 for x in range(texture.shape[1]):
-                    nx = -scaling_factor * self.normal_size_value * gradient_x[y, x] / 255.0  # Invert the sign
-                    ny = -scaling_factor * self.normal_size_value * gradient_y[y, x] / 255.0  # Invert the sign
-                    nz = 1.0 + scaling_factor * self.normal_size_value * np.sqrt(nx**2 + ny**2)  # Invert the sign
+                    if self.ui.normal_mode.currentText() == 'NormalGL':
+                        # DX
+                        nx = -scaling_factor * self.normal_size_value * gradient_x[y, x] / 255.0  # Invert the sign
+                        ny = -scaling_factor * self.normal_size_value * gradient_y[y, x] / 255.0  # Invert the sign
+                        nz = 1.0 + scaling_factor * self.normal_size_value * np.sqrt(nx**2 + ny**2)  # Invert the sign
+                    else:    
+                        # GL
+                        nx = scaling_factor * self.normal_size_value * gradient_x[y, x] / 255.0  # Invert the sign
+                        ny = scaling_factor * self.normal_size_value * gradient_y[y, x] / 255.0  # Invert the sign
+                        nz = 1.0 - scaling_factor * self.normal_size_value * np.sqrt(nx**2 + ny**2)  # Invert the sign
 
                     normal = np.array([nx, ny, nz])
                     normal /= np.linalg.norm(normal)
@@ -646,7 +658,7 @@ class MainWindow(QMainWindow):
                 # Add to added list
                 if f'{self.texture_location}/.{self.texture_name}_{type}.png' not in preview_list:
                     preview_list.append(f'{self.texture_location}/.{self.texture_name}_{type}.png')
-                print(current_image)
+
                 # Add to preview
                 pixmap = QPixmap(current_image)
                 self.ui.preview_5.setPixmap(pixmap.scaledToWidth(small_preview_size))

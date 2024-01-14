@@ -168,32 +168,32 @@ class Ui_MainWindow(object):
         self.verticalLayout_4.setObjectName(u"verticalLayout_4")
         self.gridLayout_5 = QGridLayout()
         self.gridLayout_5.setObjectName(u"gridLayout_5")
-        self.sigma_r_spinbox = QSpinBox(self.centralwidget)
-        self.sigma_r_spinbox.setObjectName(u"sigma_r_spinbox")
-
-        self.gridLayout_5.addWidget(self.sigma_r_spinbox, 3, 1, 1, 1, Qt.AlignLeft)
-
-        self.line_2 = QFrame(self.centralwidget)
-        self.line_2.setObjectName(u"line_2")
-        self.line_2.setFrameShape(QFrame.HLine)
-        self.line_2.setFrameShadow(QFrame.Sunken)
-
-        self.gridLayout_5.addWidget(self.line_2, 6, 0, 1, 1)
-
-        self.sigma_s_spinbox = QSpinBox(self.centralwidget)
-        self.sigma_s_spinbox.setObjectName(u"sigma_s_spinbox")
-
-        self.gridLayout_5.addWidget(self.sigma_s_spinbox, 2, 1, 1, 1, Qt.AlignLeft)
-
         self.pixel_size_spinbox = QSpinBox(self.centralwidget)
         self.pixel_size_spinbox.setObjectName(u"pixel_size_spinbox")
 
         self.gridLayout_5.addWidget(self.pixel_size_spinbox, 5, 1, 1, 1, Qt.AlignLeft)
 
+        self.line_11 = QFrame(self.centralwidget)
+        self.line_11.setObjectName(u"line_11")
+        self.line_11.setFrameShape(QFrame.HLine)
+        self.line_11.setFrameShadow(QFrame.Sunken)
+
+        self.gridLayout_5.addWidget(self.line_11, 13, 1, 1, 1)
+
         self.label_9 = QLabel(self.centralwidget)
         self.label_9.setObjectName(u"label_9")
 
         self.gridLayout_5.addWidget(self.label_9, 2, 0, 1, 1)
+
+        self.label_7 = QLabel(self.centralwidget)
+        self.label_7.setObjectName(u"label_7")
+
+        self.gridLayout_5.addWidget(self.label_7, 7, 0, 1, 1)
+
+        self.label_12 = QLabel(self.centralwidget)
+        self.label_12.setObjectName(u"label_12")
+
+        self.gridLayout_5.addWidget(self.label_12, 10, 0, 1, 1)
 
         self.line_5 = QFrame(self.centralwidget)
         self.line_5.setObjectName(u"line_5")
@@ -201,6 +201,63 @@ class Ui_MainWindow(object):
         self.line_5.setFrameShadow(QFrame.Sunken)
 
         self.gridLayout_5.addWidget(self.line_5, 1, 1, 1, 1)
+
+        self.label_10 = QLabel(self.centralwidget)
+        self.label_10.setObjectName(u"label_10")
+
+        self.gridLayout_5.addWidget(self.label_10, 5, 0, 1, 1)
+
+        self.sigma_s_spinbox = QSpinBox(self.centralwidget)
+        self.sigma_s_spinbox.setObjectName(u"sigma_s_spinbox")
+
+        self.gridLayout_5.addWidget(self.sigma_s_spinbox, 2, 1, 1, 1, Qt.AlignLeft)
+
+        self.line_7 = QFrame(self.centralwidget)
+        self.line_7.setObjectName(u"line_7")
+        self.line_7.setFrameShape(QFrame.HLine)
+        self.line_7.setFrameShadow(QFrame.Sunken)
+
+        self.gridLayout_5.addWidget(self.line_7, 4, 1, 1, 1)
+
+        self.label_5 = QLabel(self.centralwidget)
+        self.label_5.setObjectName(u"label_5")
+
+        self.gridLayout_5.addWidget(self.label_5, 3, 0, 1, 1)
+
+        self.line_4 = QFrame(self.centralwidget)
+        self.line_4.setObjectName(u"line_4")
+        self.line_4.setFrameShape(QFrame.HLine)
+        self.line_4.setFrameShadow(QFrame.Sunken)
+
+        self.gridLayout_5.addWidget(self.line_4, 1, 0, 1, 1)
+
+        self.label_4 = QLabel(self.centralwidget)
+        self.label_4.setObjectName(u"label_4")
+        self.label_4.setFont(font)
+
+        self.gridLayout_5.addWidget(self.label_4, 0, 0, 1, 1)
+
+        self.normal_size_spinbox = QSpinBox(self.centralwidget)
+        self.normal_size_spinbox.setObjectName(u"normal_size_spinbox")
+
+        self.gridLayout_5.addWidget(self.normal_size_spinbox, 10, 1, 1, 1, Qt.AlignLeft)
+
+        self.line_10 = QFrame(self.centralwidget)
+        self.line_10.setObjectName(u"line_10")
+        self.line_10.setFrameShape(QFrame.HLine)
+        self.line_10.setFrameShadow(QFrame.Sunken)
+
+        self.gridLayout_5.addWidget(self.line_10, 13, 0, 1, 1)
+
+        self.label_11 = QLabel(self.centralwidget)
+        self.label_11.setObjectName(u"label_11")
+
+        self.gridLayout_5.addWidget(self.label_11, 8, 0, 1, 1)
+
+        self.transparent_size_spinbox = QSpinBox(self.centralwidget)
+        self.transparent_size_spinbox.setObjectName(u"transparent_size_spinbox")
+
+        self.gridLayout_5.addWidget(self.transparent_size_spinbox, 8, 1, 1, 1, Qt.AlignLeft)
 
         self.transparent_comboBox = QComboBox(self.centralwidget)
         self.transparent_comboBox.addItem("")
@@ -217,50 +274,17 @@ class Ui_MainWindow(object):
 
         self.gridLayout_5.addWidget(self.line_6, 4, 0, 1, 1)
 
-        self.label_11 = QLabel(self.centralwidget)
-        self.label_11.setObjectName(u"label_11")
+        self.sigma_r_spinbox = QSpinBox(self.centralwidget)
+        self.sigma_r_spinbox.setObjectName(u"sigma_r_spinbox")
 
-        self.gridLayout_5.addWidget(self.label_11, 8, 0, 1, 1)
+        self.gridLayout_5.addWidget(self.sigma_r_spinbox, 3, 1, 1, 1, Qt.AlignLeft)
 
-        self.normal_size_spinbox = QSpinBox(self.centralwidget)
-        self.normal_size_spinbox.setObjectName(u"normal_size_spinbox")
+        self.line_2 = QFrame(self.centralwidget)
+        self.line_2.setObjectName(u"line_2")
+        self.line_2.setFrameShape(QFrame.HLine)
+        self.line_2.setFrameShadow(QFrame.Sunken)
 
-        self.gridLayout_5.addWidget(self.normal_size_spinbox, 10, 1, 1, 1, Qt.AlignLeft)
-
-        self.label_5 = QLabel(self.centralwidget)
-        self.label_5.setObjectName(u"label_5")
-
-        self.gridLayout_5.addWidget(self.label_5, 3, 0, 1, 1)
-
-        self.line_11 = QFrame(self.centralwidget)
-        self.line_11.setObjectName(u"line_11")
-        self.line_11.setFrameShape(QFrame.HLine)
-        self.line_11.setFrameShadow(QFrame.Sunken)
-
-        self.gridLayout_5.addWidget(self.line_11, 11, 1, 1, 1)
-
-        self.label_4 = QLabel(self.centralwidget)
-        self.label_4.setObjectName(u"label_4")
-        self.label_4.setFont(font)
-
-        self.gridLayout_5.addWidget(self.label_4, 0, 0, 1, 1)
-
-        self.label_10 = QLabel(self.centralwidget)
-        self.label_10.setObjectName(u"label_10")
-
-        self.gridLayout_5.addWidget(self.label_10, 5, 0, 1, 1)
-
-        self.line_10 = QFrame(self.centralwidget)
-        self.line_10.setObjectName(u"line_10")
-        self.line_10.setFrameShape(QFrame.HLine)
-        self.line_10.setFrameShadow(QFrame.Sunken)
-
-        self.gridLayout_5.addWidget(self.line_10, 11, 0, 1, 1)
-
-        self.label_7 = QLabel(self.centralwidget)
-        self.label_7.setObjectName(u"label_7")
-
-        self.gridLayout_5.addWidget(self.label_7, 7, 0, 1, 1)
+        self.gridLayout_5.addWidget(self.line_2, 6, 0, 1, 1)
 
         self.line_3 = QFrame(self.centralwidget)
         self.line_3.setObjectName(u"line_3")
@@ -276,18 +300,6 @@ class Ui_MainWindow(object):
 
         self.gridLayout_5.addWidget(self.line_9, 9, 1, 1, 1)
 
-        self.line_7 = QFrame(self.centralwidget)
-        self.line_7.setObjectName(u"line_7")
-        self.line_7.setFrameShape(QFrame.HLine)
-        self.line_7.setFrameShadow(QFrame.Sunken)
-
-        self.gridLayout_5.addWidget(self.line_7, 4, 1, 1, 1)
-
-        self.label_12 = QLabel(self.centralwidget)
-        self.label_12.setObjectName(u"label_12")
-
-        self.gridLayout_5.addWidget(self.label_12, 10, 0, 1, 1)
-
         self.line_8 = QFrame(self.centralwidget)
         self.line_8.setObjectName(u"line_8")
         self.line_8.setFrameShape(QFrame.HLine)
@@ -295,17 +307,17 @@ class Ui_MainWindow(object):
 
         self.gridLayout_5.addWidget(self.line_8, 9, 0, 1, 1)
 
-        self.line_4 = QFrame(self.centralwidget)
-        self.line_4.setObjectName(u"line_4")
-        self.line_4.setFrameShape(QFrame.HLine)
-        self.line_4.setFrameShadow(QFrame.Sunken)
+        self.label = QLabel(self.centralwidget)
+        self.label.setObjectName(u"label")
 
-        self.gridLayout_5.addWidget(self.line_4, 1, 0, 1, 1)
+        self.gridLayout_5.addWidget(self.label, 11, 0, 1, 1)
 
-        self.transparent_size_spinbox = QSpinBox(self.centralwidget)
-        self.transparent_size_spinbox.setObjectName(u"transparent_size_spinbox")
+        self.normal_mode = QComboBox(self.centralwidget)
+        self.normal_mode.addItem("")
+        self.normal_mode.addItem("")
+        self.normal_mode.setObjectName(u"normal_mode")
 
-        self.gridLayout_5.addWidget(self.transparent_size_spinbox, 8, 1, 1, 1, Qt.AlignLeft)
+        self.gridLayout_5.addWidget(self.normal_mode, 11, 1, 1, 1)
 
 
         self.verticalLayout_4.addLayout(self.gridLayout_5)
@@ -370,15 +382,19 @@ class Ui_MainWindow(object):
         self.preview_4.setText("")
         self.preview_5.setText("")
         self.label_9.setText(QCoreApplication.translate("MainWindow", u"Sigma_s", None))
+        self.label_7.setText(QCoreApplication.translate("MainWindow", u"Background Color", None))
+        self.label_12.setText(QCoreApplication.translate("MainWindow", u"Texture Strength", None))
+        self.label_10.setText(QCoreApplication.translate("MainWindow", u"Pixel Size", None))
+        self.label_5.setText(QCoreApplication.translate("MainWindow", u"Sigma_r", None))
+        self.label_4.setText(QCoreApplication.translate("MainWindow", u"Settings", None))
+        self.label_11.setText(QCoreApplication.translate("MainWindow", u"Range", None))
         self.transparent_comboBox.setItemText(0, QCoreApplication.translate("MainWindow", u"White", None))
         self.transparent_comboBox.setItemText(1, QCoreApplication.translate("MainWindow", u"Black", None))
 
-        self.label_11.setText(QCoreApplication.translate("MainWindow", u"Range", None))
-        self.label_5.setText(QCoreApplication.translate("MainWindow", u"Sigma_r", None))
-        self.label_4.setText(QCoreApplication.translate("MainWindow", u"Settings", None))
-        self.label_10.setText(QCoreApplication.translate("MainWindow", u"Pixel Size", None))
-        self.label_7.setText(QCoreApplication.translate("MainWindow", u"Background Color", None))
-        self.label_12.setText(QCoreApplication.translate("MainWindow", u"Texture Strength", None))
+        self.label.setText(QCoreApplication.translate("MainWindow", u"Mode", None))
+        self.normal_mode.setItemText(0, QCoreApplication.translate("MainWindow", u"NormalDX", None))
+        self.normal_mode.setItemText(1, QCoreApplication.translate("MainWindow", u"NormalGL", None))
+
         self.update_btn.setText(QCoreApplication.translate("MainWindow", u"Update Settings", None))
         self.menuFilters.setTitle(QCoreApplication.translate("MainWindow", u"Generate", None))
         self.menuFile.setTitle(QCoreApplication.translate("MainWindow", u"File", None))

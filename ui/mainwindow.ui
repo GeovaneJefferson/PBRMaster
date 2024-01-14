@@ -212,26 +212,34 @@
      <layout class="QVBoxLayout" name="verticalLayout_4">
       <item>
        <layout class="QGridLayout" name="gridLayout_5" columnstretch="0,0">
-        <item row="3" column="1" alignment="Qt::AlignLeft">
-         <widget class="QSpinBox" name="sigma_r_spinbox"/>
+        <item row="5" column="1" alignment="Qt::AlignLeft">
+         <widget class="QSpinBox" name="pixel_size_spinbox"/>
         </item>
-        <item row="6" column="0">
-         <widget class="Line" name="line_2">
+        <item row="13" column="1">
+         <widget class="Line" name="line_11">
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
           </property>
          </widget>
         </item>
-        <item row="2" column="1" alignment="Qt::AlignLeft">
-         <widget class="QSpinBox" name="sigma_s_spinbox"/>
-        </item>
-        <item row="5" column="1" alignment="Qt::AlignLeft">
-         <widget class="QSpinBox" name="pixel_size_spinbox"/>
-        </item>
         <item row="2" column="0">
          <widget class="QLabel" name="label_9">
           <property name="text">
            <string>Sigma_s</string>
+          </property>
+         </widget>
+        </item>
+        <item row="7" column="0">
+         <widget class="QLabel" name="label_7">
+          <property name="text">
+           <string>Background Color</string>
+          </property>
+         </widget>
+        </item>
+        <item row="10" column="0">
+         <widget class="QLabel" name="label_12">
+          <property name="text">
+           <string>Texture Strength</string>
           </property>
          </widget>
         </item>
@@ -241,6 +249,69 @@
            <enum>Qt::Horizontal</enum>
           </property>
          </widget>
+        </item>
+        <item row="5" column="0">
+         <widget class="QLabel" name="label_10">
+          <property name="text">
+           <string>Pixel Size</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="1" alignment="Qt::AlignLeft">
+         <widget class="QSpinBox" name="sigma_s_spinbox"/>
+        </item>
+        <item row="4" column="1">
+         <widget class="Line" name="line_7">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="0">
+         <widget class="QLabel" name="label_5">
+          <property name="text">
+           <string>Sigma_r</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="Line" name="line_4">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="0">
+         <widget class="QLabel" name="label_4">
+          <property name="font">
+           <font>
+            <bold>true</bold>
+           </font>
+          </property>
+          <property name="text">
+           <string>Settings</string>
+          </property>
+         </widget>
+        </item>
+        <item row="10" column="1" alignment="Qt::AlignLeft">
+         <widget class="QSpinBox" name="normal_size_spinbox"/>
+        </item>
+        <item row="13" column="0">
+         <widget class="Line" name="line_10">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+         </widget>
+        </item>
+        <item row="8" column="0">
+         <widget class="QLabel" name="label_11">
+          <property name="text">
+           <string>Range</string>
+          </property>
+         </widget>
+        </item>
+        <item row="8" column="1" alignment="Qt::AlignLeft">
+         <widget class="QSpinBox" name="transparent_size_spinbox"/>
         </item>
         <item row="7" column="1" alignment="Qt::AlignLeft">
          <widget class="QComboBox" name="transparent_comboBox">
@@ -269,60 +340,13 @@
           </property>
          </widget>
         </item>
-        <item row="8" column="0">
-         <widget class="QLabel" name="label_11">
-          <property name="text">
-           <string>Range</string>
-          </property>
-         </widget>
+        <item row="3" column="1" alignment="Qt::AlignLeft">
+         <widget class="QSpinBox" name="sigma_r_spinbox"/>
         </item>
-        <item row="10" column="1" alignment="Qt::AlignLeft">
-         <widget class="QSpinBox" name="normal_size_spinbox"/>
-        </item>
-        <item row="3" column="0">
-         <widget class="QLabel" name="label_5">
-          <property name="text">
-           <string>Sigma_r</string>
-          </property>
-         </widget>
-        </item>
-        <item row="11" column="1">
-         <widget class="Line" name="line_11">
+        <item row="6" column="0">
+         <widget class="Line" name="line_2">
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="0">
-         <widget class="QLabel" name="label_4">
-          <property name="font">
-           <font>
-            <bold>true</bold>
-           </font>
-          </property>
-          <property name="text">
-           <string>Settings</string>
-          </property>
-         </widget>
-        </item>
-        <item row="5" column="0">
-         <widget class="QLabel" name="label_10">
-          <property name="text">
-           <string>Pixel Size</string>
-          </property>
-         </widget>
-        </item>
-        <item row="11" column="0">
-         <widget class="Line" name="line_10">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-         </widget>
-        </item>
-        <item row="7" column="0">
-         <widget class="QLabel" name="label_7">
-          <property name="text">
-           <string>Background Color</string>
           </property>
          </widget>
         </item>
@@ -340,20 +364,6 @@
           </property>
          </widget>
         </item>
-        <item row="4" column="1">
-         <widget class="Line" name="line_7">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-         </widget>
-        </item>
-        <item row="10" column="0">
-         <widget class="QLabel" name="label_12">
-          <property name="text">
-           <string>Texture Strength</string>
-          </property>
-         </widget>
-        </item>
         <item row="9" column="0">
          <widget class="Line" name="line_8">
           <property name="orientation">
@@ -361,15 +371,26 @@
           </property>
          </widget>
         </item>
-        <item row="1" column="0">
-         <widget class="Line" name="line_4">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
+        <item row="11" column="0">
+         <widget class="QLabel" name="label">
+          <property name="text">
+           <string>Mode</string>
           </property>
          </widget>
         </item>
-        <item row="8" column="1" alignment="Qt::AlignLeft">
-         <widget class="QSpinBox" name="transparent_size_spinbox"/>
+        <item row="11" column="1">
+         <widget class="QComboBox" name="normal_mode">
+          <item>
+           <property name="text">
+            <string>NormalDX</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>NormalGL</string>
+           </property>
+          </item>
+         </widget>
         </item>
        </layout>
       </item>
