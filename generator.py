@@ -13,6 +13,7 @@ from ui.ui_mainwindow import Ui_MainWindow
 preview_list = []
 big_preview_size = 350
 small_preview_size = 200
+hover_preview_size = 650
 version_number = 'V.0.3'
 
 
@@ -33,6 +34,7 @@ class MainWindow(QMainWindow):
 
         self.texture_name = ''
         self.texture_location = ''
+        self.already_handled_space = False
 
         # Version label
         # self.ui.version_label.setText(version_number)
@@ -73,7 +75,7 @@ class MainWindow(QMainWindow):
         # Sigma r
         self.ui.sigma_r_spinbox.setMinimum(1)
         self.ui.sigma_r_spinbox.setMaximum(100)
-        self.ui.sigma_r_spinbox.setValue(2)
+        self.ui.sigma_r_spinbox.setValue(1)
         self.ui.sigma_r_spinbox.valueChanged.connect(self.update_stylization)
 
         # Pixel Size
@@ -85,7 +87,7 @@ class MainWindow(QMainWindow):
         # Normal Size
         self.ui.normal_size_spinbox.setMinimum(1)
         self.ui.normal_size_spinbox.setMaximum(100)
-        self.ui.normal_size_spinbox.setValue(5)
+        self.ui.normal_size_spinbox.setValue(1)
         self.ui.normal_size_spinbox.valueChanged.connect(self.update_normal)
       
         # Transparent Size
@@ -218,6 +220,16 @@ class MainWindow(QMainWindow):
         # Get texture path name
         self.texture_name = self.file_path.split('/')[-1].split('.')[:-1][0]
         self.texture_location = '/'.join(self.file_path.split('/')[:-1])
+        
+        # # Handle spaces
+        # if not self.already_handled_space:
+        #     if ' ' in self.texture_location:
+        #         self.texture_location = self.texture_location.replace(' ', r'\ ')
+        #         # self.texture_location = self.texture_location.replace(' ', '\\ ')
+        #         # self.texture_location = '"' + self.texture_location + '"'
+
+        #         self.already_handled_space = True
+
         return f'{self.texture_location}/.{self.texture_name}'
     
     def loading(self):
@@ -240,9 +252,9 @@ class MainWindow(QMainWindow):
         elif self.choosed_style == 'normal':
             self.update_normal()
             self.apply_normal()
-        elif self.choosed_style == 'toon':
-            self.update_toon()
-            self.apply_toon()
+        # elif self.choosed_style == 'toon':
+        #     self.update_toon()
+        #     self.apply_toon()
              
         self.done() 
 
@@ -463,9 +475,19 @@ class MainWindow(QMainWindow):
         # Get texture path name
         self.texture_name = self.file_location().split('/')[-1].split('.')[:-1][0]
         self.texture_location = '/'.join(self.file_location().split('/')[:-1])
+        
+        # # Handle spaces
+        # if not self.already_handled_space:
+        #     if ' ' in self.texture_location:
+        #         # self.texture_location = self.texture_location.replace(' ', r'\ ')
+        #         # self.texture_location = self.texture_location.replace(' ', '\\ ')
+        #         # self.texture_location = self.texture_location.replace(' ', '\ ')
+        #         # self.texture_location = '"' + self.texture_location + '"'
+
+        #         self.already_handled_space = True
 
         self.new_color_generated_image = f'{self.texture_location}/.{self.texture_name}_color.png'
-
+        
         # NORMAL MAP
         if self.ui.normal_map_checkbox.isChecked():
             # Load the texture image in grayscale
@@ -475,23 +497,20 @@ class MainWindow(QMainWindow):
             gradient_x = cv2.Sobel(texture, cv2.CV_64F, 1, 0, ksize=3)
             gradient_y = cv2.Sobel(texture, cv2.CV_64F, 0, 1, ksize=3)
 
-            # Set a scaling factor for the normal values (adjust as needed)
-            scaling_factor = 0.2
-
             # Calculate the normal map from gradients with scaling
             normal_map = np.zeros((texture.shape[0], texture.shape[1], 3), dtype=np.uint8)
             for y in range(texture.shape[0]):
                 for x in range(texture.shape[1]):
                     if self.ui.normal_mode.currentText() == 'NormalGL':
                         # DX
-                        nx = -scaling_factor * self.normal_size_value * gradient_x[y, x] / 255.0  # Invert the sign
-                        ny = -scaling_factor * self.normal_size_value * gradient_y[y, x] / 255.0  # Invert the sign
-                        nz = 1.0 + scaling_factor * self.normal_size_value * np.sqrt(nx**2 + ny**2)  # Invert the sign
+                        nx = -self.normal_size_value * gradient_x[y, x] / 255.0  # Invert the sign
+                        ny = -self.normal_size_value * gradient_y[y, x] / 255.0  # Invert the sign
+                        nz = 1 + self.normal_size_value * np.sqrt(nx**2 + ny**2)  # Invert the sign
                     else:    
                         # GL
-                        nx = scaling_factor * self.normal_size_value * gradient_x[y, x] / 255.0  # Invert the sign
-                        ny = scaling_factor * self.normal_size_value * gradient_y[y, x] / 255.0  # Invert the sign
-                        nz = 1.0 - scaling_factor * self.normal_size_value * np.sqrt(nx**2 + ny**2)  # Invert the sign
+                        nx = self.normal_size_value * gradient_x[y, x] / 255.0  # Invert the sign
+                        ny = self.normal_size_value * gradient_y[y, x] / 255.0  # Invert the sign
+                        nz = 1 - self.normal_size_value * np.sqrt(nx**2 + ny**2)  # Invert the sign
 
                     normal = np.array([nx, ny, nz])
                     normal /= np.linalg.norm(normal)
@@ -508,10 +527,6 @@ class MainWindow(QMainWindow):
 
         # ROUGHNESS MAP
         if self.ui.roughness_map_checkbox.isChecked():
-            # ROUGNESS
-            # Load the texture image in grayscale
-            texture = cv2.imread(self.new_color_generated_image, cv2.IMREAD_GRAYSCALE)
-
             # Calculate gradients using the Sobel operator
             gradient_x = cv2.Sobel(texture, cv2.CV_64F, 1, 0, ksize=3)
             gradient_y = cv2.Sobel(texture, cv2.CV_64F, 0, 1, ksize=3)
@@ -521,7 +536,20 @@ class MainWindow(QMainWindow):
             for y in range(texture.shape[0]):
                 for x in range(texture.shape[1]):
                     gradient_magnitude = np.sqrt(gradient_x[y, x]**2 + gradient_y[y, x]**2)
-                    roughness = self.normal_size_value * gradient_magnitude / 255.0
+
+                    # Adjust the scaling factor for roughness
+                    roughness = 0.5 * gradient_magnitude / 255.0  # Adjust the factor as needed
+
+                    # # Ensure roughness values are in the valid range [0, 1]
+                    # roughness = np.clip(roughness, 0, 1)
+
+                    # # Map roughness value to 0-255 range
+                    # roughness_value = int(roughness * 255)
+                    # roughness_map[y, x] = roughness_value
+
+                    # Apply gamma correction to brighten the roughness map
+                    gamma = 4  # Adjust the gamma value as needed
+                    roughness = np.power(roughness, 1/gamma)
 
                     # Ensure roughness values are in the valid range [0, 1]
                     roughness = np.clip(roughness, 0, 1)
@@ -543,7 +571,8 @@ class MainWindow(QMainWindow):
             texture_normalized = texture / 255.0
 
             # Apply specular strength
-            specular_map = (texture_normalized ** self.normal_size_value) * 255.0
+            # specular_map = (texture_normalized ** self.normal_size_value) * 255.0
+            specular_map = (texture_normalized ** 1) * 255.0
 
             # return specular_map.astype(np.uint8)
             self.show_preview(specular_map.astype(np.uint8), 'specular')
@@ -552,21 +581,35 @@ class MainWindow(QMainWindow):
 
         # AMBIENT OCCLUSION
         if self.ui.ao_map_checkbox.isChecked():
-            texture = cv2.imread(self.file_path)
+            # Read the texture image
+            texture = cv2.imread(self.new_color_generated_image, cv2.IMREAD_GRAYSCALE)
 
-            # Convert the texture to grayscale
-            grayscale_texture = cv2.cvtColor(texture, cv2.COLOR_BGR2GRAY)
+            # Normalize the texture to the range [0, 1]
+            texture = texture.astype(np.float32) / 255.0
 
-            # Apply a simple blur to the grayscale texture
-            blurred_texture = cv2.GaussianBlur(grayscale_texture, (5, 5), 0)
+            # Calculate the gradient of the texture
+            gradient_x = cv2.Sobel(texture, cv2.CV_64F, 1, 0, ksize=3)
+            gradient_y = cv2.Sobel(texture, cv2.CV_64F, 0, 1, ksize=3)
 
-            # Normalize the blurred texture to the range [0, 1]
-            normalized_texture = blurred_texture / 255.0
+            # Calculate the magnitude of the gradient
+            gradient_magnitude = np.sqrt(gradient_x**2 + gradient_y**2)
 
-            # Invert the values to create ambient occlusion
-            ambient_occlusion_map = self.normal_size_value - normalized_texture
+            # Apply a Gaussian blur to the gradient magnitude
+            # blurred_gradient = cv2.GaussianBlur(gradient_magnitude, (5, 5), 0)
 
-            self.show_preview((ambient_occlusion_map * 255).astype(np.uint8), 'ambient_occlusion')
+            # Invert the blurred gradient to create the ambient occlusion map
+            ao_map = 1 - gradient_magnitude * 1
+
+            # Clip values to the range [0, 1]
+            ao_map = np.clip(ao_map, 0, 1)
+            
+            # Increase contrast in the dark parts
+            ao_map = np.power(ao_map, 2)
+
+            # Clip values to the range [0, 1]
+            ao_map = np.clip(ao_map, 0, 1)
+
+            self.show_preview((ao_map * 255).astype(np.uint8), 'ambient_occlusion')
         else:
             # Clean preview
             self.ui.preview_5.setPixmap(QPixmap())
@@ -591,13 +634,14 @@ class MainWindow(QMainWindow):
     
     def show_preview(self, coordinates, type):
         img = Image.fromarray(coordinates)
+
         current_image = f'{self.texture_location}/.{self.texture_name}_{type}.png'
         
-        scaledHTML='width:"5%" height="550"'
+        scaledHTML=f'width:"5%" height="{hover_preview_size}"'
         # Hover preview
         self.ui.preview_1.setToolTip(
             f"<img src={self.new_color_generated_image} {scaledHTML}/>")
-            
+        
         try:
             # Normal
             if type == 'normal':
