@@ -4,7 +4,7 @@ import numpy as np
 import subprocess as sub
 import platform
 
-from PySide6.QtWidgets import QApplication, QMainWindow, QFileDialog, QWidget
+from PySide6.QtWidgets import QApplication, QMainWindow, QFileDialog, QWidget, QDialog
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QPixmap, QImageReader, QImage
 from PIL import Image
@@ -796,13 +796,13 @@ class MainWindow(QMainWindow):
             preview_list.append(f'{self.texture_location}/.{self.texture_name}_{type}.png')
             
 
-class PBRWindow(QWidget):
-    def __init__(self, parent=None):
-        super().__init__(parent)
+class PBRWindow(QDialog):
+    def __init__(self, parent=True):
+        super().__init__()
         self.ui_pbr = Ui_PBR_Window()
         self.ui_pbr.setupUi(self)
+        self.setModal(True)
         self.setWindowTitle('PBR Settings')
-        self.setWindowFlags(Qt.WindowStaysOnTopHint)
         self.setFixedSize(400, 450)
 
         # Connections
@@ -815,11 +815,12 @@ class PBRWindow(QWidget):
             print(e)
 
 
-class StylizedWindow(QWidget):
-    def __init__(self, parent=None):
-        super().__init__(parent)
+class StylizedWindow(QDialog):
+    def __init__(self, parent=True):
+        super().__init__()
         self.ui_stylized = Ui_Stylized_Window()
         self.ui_stylized.setupUi(self)
+        self.setModal(True)
         self.setWindowTitle('Stylized Settings')
         self.setWindowFlags(Qt.WindowStaysOnTopHint)
         self.setFixedSize(400, 450)
