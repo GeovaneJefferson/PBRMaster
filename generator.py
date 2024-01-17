@@ -94,6 +94,12 @@ class MainWindow(QMainWindow):
         pbr_win.ui_pbr.normal_size_spinbox.setMaximum(100)
         pbr_win.ui_pbr.normal_size_spinbox.setValue(1)
         pbr_win.ui_pbr.normal_size_spinbox.valueChanged.connect(self.update_normal)
+        
+        # PBR Style
+        stylized_win.ui_stylized.normal_size_spinbox.setMinimum(1)
+        stylized_win.ui_stylized.normal_size_spinbox.setMaximum(100)
+        stylized_win.ui_stylized.normal_size_spinbox.setValue(1)
+        stylized_win.ui_stylized.normal_size_spinbox.valueChanged.connect(self.update_normal)
       
         # Transparent Size
         # self.ui.transparent_size_spinbox.setMinimum(1)
@@ -106,9 +112,12 @@ class MainWindow(QMainWindow):
         self.sigma_r_value = stylized_win.ui_stylized.sigma_r_spinbox.value()
         
         self.pixel_size_value = self.ui.pixel_size_spinbox.value()
+
         self.normal_size_value = pbr_win.ui_pbr.normal_size_spinbox.value()
-        self.transparent_range = self.ui.transparent_size_spinbox.value()
-        self.transparent_color = self.ui.transparent_comboBox.currentText()
+        # self.normal_size_value = stylized_win.ui_stylized.normal_size_spinbox.value()
+
+        # self.transparent_range = self.ui.transparent_size_spinbox.value()
+        # self.transparent_color = self.ui.transparent_comboBox.currentText()
 
         # Hide
         self.ui.actionPBR.setEnabled(False)
@@ -461,13 +470,15 @@ class MainWindow(QMainWindow):
     def update_normal(self):
         try:
             self.normal_size_value = pbr_win.ui_pbr.normal_size_spinbox.value()
+            # self.normal_size_value =  stylized_win.ui_stylized.normal_size_spinbox.value()
         except ValueError:
             pass
     
     def update_stylization(self):
         try:
+            # Stylyze
             self.sigma_s_value = stylized_win.ui_stylized.sigma_s_spinbox.value()
-            self.sigma_r_value = stylized_win.ui_stylized.sigma_r_spinbox.value()  # Assuming sigma_r still uses a QSlider
+            self.sigma_r_value = stylized_win.ui_stylized.sigma_r_spinbox.value()
             
             self.sigma_s_value = int(stylized_win.ui_stylized.sigma_s_spinbox.text())
             stylized_win.ui_stylized.sigma_s_spinbox.setValue(self.sigma_s_value)
@@ -478,12 +489,11 @@ class MainWindow(QMainWindow):
             pass
     
      # Pixelization 
-    
-    def update_toon(self):
-        try:
-            self.toon_size_value = self.ui.toon_size_spinbox.value()
-        except ValueError:
-            pass
+    # def update_toon(self):
+    #     try:
+    #         self.toon_size_value = self.ui.toon_size_spinbox.value()
+    #     except ValueError:
+    #         pass
      
     def generate_maps(self):
         self.loading()
@@ -520,7 +530,9 @@ class MainWindow(QMainWindow):
             normal_map = np.zeros((texture.shape[0], texture.shape[1], 3), dtype=np.uint8)
             for y in range(texture.shape[0]):
                 for x in range(texture.shape[1]):
-                    if pbr_win.ui_pbr.normal_mode.currentText() == 'NormalGL':
+                    if pbr_win.ui_pbr.normal_mode.currentText() == 'NormalGL' or\
+                        stylized_win.ui_stylized.normal_mode.currentText() == 'NormalGL':
+
                         # DX
                         nx = -self.normal_size_value * scaling_factor * gradient_x[y, x] / 255.0  
                         ny = -self.normal_size_value * scaling_factor * gradient_y[y, x] / 255.0  
