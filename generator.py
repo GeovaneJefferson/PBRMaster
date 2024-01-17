@@ -4,17 +4,22 @@ import numpy as np
 import subprocess as sub
 import platform
 
-from PySide6.QtWidgets import QApplication, QMainWindow, QFileDialog
+from PySide6.QtWidgets import QApplication, QMainWindow, QFileDialog, QWidget
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QPixmap, QImageReader, QImage
 from PIL import Image
 from ui.ui_mainwindow import Ui_MainWindow
+from ui.ui_pbr import Ui_PBR_Window
+from ui.ui_stylized import Ui_Stylized_Window
 
 preview_list = []
 big_preview_size = 350
-small_preview_size = 200
+small_preview_size = 150
 hover_preview_size = 650
 version_number = 'V.0.3'
+
+only_normal_map = False
+scaledHTML = f'width:"5%" height="{hover_preview_size}"'
 
 
 class MainWindow(QMainWindow):
@@ -61,22 +66,22 @@ class MainWindow(QMainWindow):
         self.ui.actionSave_New_Textures.triggered.connect(self.save_textures)
 
         # Generate
-        self.ui.actionPBR.triggered.connect(self.apply_normal)
-        self.ui.actionStylized.triggered.connect(self.apply_stylization)
+        self.ui.actionPBR.triggered.connect(self.open_pbr_settings)
+        self.ui.actionStylized.triggered.connect(self.open_stylized_settings)
         self.ui.actionPixel.triggered.connect(self.apply_pixelization)
    
         # Spin box
         # Sigma s
-        self.ui.sigma_s_spinbox.setMinimum(1)
-        self.ui.sigma_s_spinbox.setMaximum(100)
-        self.ui.sigma_s_spinbox.setValue(100)
-        self.ui.sigma_s_spinbox.valueChanged.connect(self.update_stylization)
+        stylized_win.ui_stylized.sigma_s_spinbox.setMinimum(1)
+        stylized_win.ui_stylized.sigma_s_spinbox.setMaximum(100)
+        stylized_win.ui_stylized.sigma_s_spinbox.setValue(100)
+        stylized_win.ui_stylized.sigma_s_spinbox.valueChanged.connect(self.update_stylization)
         
         # Sigma r
-        self.ui.sigma_r_spinbox.setMinimum(1)
-        self.ui.sigma_r_spinbox.setMaximum(100)
-        self.ui.sigma_r_spinbox.setValue(1)
-        self.ui.sigma_r_spinbox.valueChanged.connect(self.update_stylization)
+        stylized_win.ui_stylized.sigma_r_spinbox.setMinimum(1)
+        stylized_win.ui_stylized.sigma_r_spinbox.setMaximum(100)
+        stylized_win.ui_stylized.sigma_r_spinbox.setValue(1)
+        stylized_win.ui_stylized.sigma_r_spinbox.valueChanged.connect(self.update_stylization)
 
         # Pixel Size
         self.ui.pixel_size_spinbox.setMinimum(1)
@@ -85,10 +90,10 @@ class MainWindow(QMainWindow):
         self.ui.pixel_size_spinbox.valueChanged.connect(self.update_pixelization)
         
         # Normal Size
-        self.ui.normal_size_spinbox.setMinimum(1)
-        self.ui.normal_size_spinbox.setMaximum(100)
-        self.ui.normal_size_spinbox.setValue(1)
-        self.ui.normal_size_spinbox.valueChanged.connect(self.update_normal)
+        pbr_win.ui_pbr.normal_size_spinbox.setMinimum(1)
+        pbr_win.ui_pbr.normal_size_spinbox.setMaximum(100)
+        pbr_win.ui_pbr.normal_size_spinbox.setValue(1)
+        pbr_win.ui_pbr.normal_size_spinbox.valueChanged.connect(self.update_normal)
       
         # Transparent Size
         # self.ui.transparent_size_spinbox.setMinimum(1)
@@ -97,21 +102,25 @@ class MainWindow(QMainWindow):
         # self.ui.transparent_size_spinbox.valueChanged.connect(self.update_transparent_range)
 
         # Values
-        self.sigma_s_value = self.ui.sigma_s_spinbox.value()
-        self.sigma_r_value = self.ui.sigma_r_spinbox.value()
+        self.sigma_s_value = stylized_win.ui_stylized.sigma_s_spinbox.value()
+        self.sigma_r_value = stylized_win.ui_stylized.sigma_r_spinbox.value()
+        
         self.pixel_size_value = self.ui.pixel_size_spinbox.value()
-        self.normal_size_value = self.ui.normal_size_spinbox.value()
+        self.normal_size_value = pbr_win.ui_pbr.normal_size_spinbox.value()
         self.transparent_range = self.ui.transparent_size_spinbox.value()
         self.transparent_color = self.ui.transparent_comboBox.currentText()
 
         # Hide
-        self.ui.sigma_s_spinbox.setEnabled(False)
-        self.ui.sigma_r_spinbox.setEnabled(False)
-        self.ui.pixel_size_spinbox.setEnabled(False)
-        self.ui.transparent_comboBox.setEnabled(False)
-        self.ui.transparent_size_spinbox.setEnabled(False)
-        self.ui.normal_size_spinbox.setEnabled(False)
-        self.ui.normal_mode.setEnabled(False)
+        self.ui.actionPBR.setEnabled(False)
+        self.ui.actionStylized.setEnabled(False)
+        self.ui.actionPixel.setEnabled(False)
+        # stylized_win.ui_stylized.sigma_s_spinbox.setEnabled(False)
+        # stylized_win.ui_stylized.sigma_r_spinbox.setEnabled(False)
+        # self.ui.pixel_size_spinbox.setEnabled(False)
+        # self.ui.transparent_comboBox.setEnabled(False)
+        # self.ui.transparent_size_spinbox.setEnabled(False)
+        # pbr_win.ui_pbr.normal_size_spinbox.setEnabled(False)
+        # pbr_win.ui_pbr.normal_mode.setEnabled(False)
 
         # self.ui.toon_btn.hide()
         self.ui.Transparent_map_checkbox.hide()
@@ -129,6 +138,8 @@ class MainWindow(QMainWindow):
         self.ui.preview_3.setPixmap(QPixmap())
         self.ui.preview_4.setPixmap(QPixmap())
         self.ui.preview_5.setPixmap(QPixmap())
+
+        pbr_win.ui_pbr.PBR_Preview_Label.setPixmap(QPixmap())
         
         # Delete first 5 previous textures
         refresh()
@@ -157,11 +168,14 @@ class MainWindow(QMainWindow):
             self.file_path = file_path
             
             # Get texture path name
-            self.texture_name = str(self.file_location().split('/')[-1].split('.')[:-1][0])
-            self.texture_location = '/'.join(self.file_location().split('/')[:-1])
-    
+            self.texture_name = str(self.file_location()).split('/')[-1].split('.')[:-1][0]
+            self.texture_location = '/'.join(self.file_location()).split('/')[:-1]
             
             if self.file_path:
+                # Enable
+                self.ui.actionPBR.setEnabled(True)
+                self.ui.actionStylized.setEnabled(True)
+
                 image_reader = QImageReader(self.file_path)
                 image_reader.setAutoTransform(True)
 
@@ -195,6 +209,11 @@ class MainWindow(QMainWindow):
         self.file_path = file_name
 
         if self.file_path:
+            # Enable
+            self.ui.actionPBR.setEnabled(True)
+            self.ui.actionStylized.setEnabled(True)
+
+            
             # Load image with 16-bit color depth
             # img_16bit = cv2.imread(self.file_path, cv2.IMREAD_UNCHANGED)
 
@@ -250,8 +269,10 @@ class MainWindow(QMainWindow):
             self.update_pixelization()
             self.apply_pixelization()
         elif self.choosed_style == 'normal':
+            only_normal_map = True
             self.update_normal()
             self.apply_normal()
+
         # elif self.choosed_style == 'toon':
         #     self.update_toon()
         #     self.apply_toon()
@@ -264,21 +285,10 @@ class MainWindow(QMainWindow):
      
         self.choosed_style = 'style'
         self.modifield_image = self.file_path
+        modded_color_texture = f'{self.file_location()}_color.png'
 
         self.ui.preview_1.setPixmap(QPixmap())
-        
-        # Enable buttons
-        # self.ui.save_btn.setEnabled(True)
-       
-        # Hide
-        self.ui.sigma_s_spinbox.setEnabled(True)
-        self.ui.sigma_r_spinbox.setEnabled(True)
-        self.ui.pixel_size_spinbox.setEnabled(False)
-        self.ui.transparent_comboBox.setEnabled(False)
-        self.ui.transparent_size_spinbox.setEnabled(False)
-        self.ui.normal_size_spinbox.setEnabled(True)
-        self.ui.normal_mode.setEnabled(True)
-        
+  
         # Read the input image
         img = cv2.imread(self.modifield_image)
 
@@ -291,18 +301,23 @@ class MainWindow(QMainWindow):
                                         sigma_r=self.sigma_r_value)
 
         cv2.imwrite(
-            f'{self.file_location()}_color.png',
+            modded_color_texture,
             cv2.cvtColor(stylized_image,
             cv2.COLOR_RGB2BGR))
         
         # Add to added list
-        if f'{self.file_location()}_color.png' not in preview_list:
-            preview_list.append(f'{self.file_location()}_color.png')
+        if modded_color_texture not in preview_list:
+            preview_list.append(modded_color_texture)
 
         # Preview 1
-        pixmap = QPixmap.fromImage(QImage(f'{self.file_location()}_color.png'))
+        pixmap = QPixmap.fromImage(QImage(modded_color_texture))
         self.ui.preview_1.setPixmap(pixmap.scaledToWidth(big_preview_size))
-
+        
+        # Hover preview in settings
+        stylized_win.ui_stylized.Stylized_Preview_Label.setPixmap(pixmap.scaledToWidth(small_preview_size))
+        stylized_win.ui_stylized.Stylized_Preview_Label.setToolTip(
+            f"<img src={modded_color_texture} {scaledHTML}/>")
+         
         # Unlock stylized settings
         # self.ui.stylized_settings.setEnabled(True)
         
@@ -317,13 +332,13 @@ class MainWindow(QMainWindow):
         # self.ui.save_btn.setEnabled(True)
         
         # # Hide
-        self.ui.sigma_s_spinbox.setEnabled(False)
-        self.ui.sigma_r_spinbox.setEnabled(False)
+        stylized_win.ui_stylized.sigma_s_spinbox.setEnabled(False)
+        stylized_win.ui_stylized.sigma_r_spinbox.setEnabled(False)
         self.ui.pixel_size_spinbox.setEnabled(True)
         self.ui.transparent_comboBox.setEnabled(False)
         self.ui.transparent_size_spinbox.setEnabled(False)
-        self.ui.normal_size_spinbox.setEnabled(True)
-        self.ui.normal_mode.setEnabled(True)
+        pbr_win.ui_pbr.normal_size_spinbox.setEnabled(True)
+        pbr_win.ui_pbr.normal_mode.setEnabled(True)
         
         if self.loaded_image is not None:
             # Convert QImage to PIL Image
@@ -365,13 +380,13 @@ class MainWindow(QMainWindow):
     #     self.choosed_style = 'toon'
 
     #     # Hide
-    #     self.ui.sigma_s_spinbox.setEnabled(False)
-    #     self.ui.sigma_r_spinbox.setEnabled(False)
+    #     stylized_win.ui_stylized.sigma_s_spinbox.setEnabled(False)
+    #     stylized_win.ui_stylized.sigma_r_spinbox.setEnabled(False)
     #     self.ui.pixel_size_spinbox.setEnabled(False)
     #     self.ui.transparent_comboBox.setEnabled(False)
     #     self.ui.transparent_size_spinbox.setEnabled(False)
-    #     self.ui.normal_size_spinbox.setEnabled(True)
-    #     self.ui.normal_mode.setEnabled(False)
+    #     pbr_win.ui_pbr.normal_size_spinbox.setEnabled(True)
+    #     pbr_win.ui_pbr.normal_mode.setEnabled(False)
         
     #     # Read the input image
     #     img = cv2.imread(self.file_path)
@@ -406,19 +421,23 @@ class MainWindow(QMainWindow):
         
     #     self.generate_maps()
     
+    def open_pbr_settings(self):
+        # Generate
+        self.apply_normal()
+
+        # Open settings window
+        pbr_win.show()
+    
+    def open_stylized_settings(self):
+        # Generate
+        self.apply_stylization()
+
+        # Open settings window
+        stylized_win.show()
+
     def apply_normal(self):
         self.choosed_style = 'normal'
-        # self.modifield_image = self.file_path
-
-        # Hide
-        self.ui.sigma_s_spinbox.setEnabled(False)
-        self.ui.sigma_r_spinbox.setEnabled(False)
-        self.ui.pixel_size_spinbox.setEnabled(False)
-        self.ui.transparent_comboBox.setEnabled(False)
-        self.ui.transparent_size_spinbox.setEnabled(False)
-        self.ui.normal_size_spinbox.setEnabled(True)
-        self.ui.normal_mode.setEnabled(True)
-        
+   
         # Add to added list
         if f'{self.file_location()}_color.png' not in preview_list:
             preview_list.append(f'{self.file_location()}_color.png')
@@ -431,7 +450,6 @@ class MainWindow(QMainWindow):
         self.ui.preview_1.setPixmap(pixmap.scaledToWidth(big_preview_size))
 
         self.generate_maps()
- 
 
     # UPDATES
     def update_pixelization(self):
@@ -442,20 +460,20 @@ class MainWindow(QMainWindow):
     
     def update_normal(self):
         try:
-            self.normal_size_value = self.ui.normal_size_spinbox.value()
+            self.normal_size_value = pbr_win.ui_pbr.normal_size_spinbox.value()
         except ValueError:
             pass
     
     def update_stylization(self):
         try:
-            self.sigma_s_value = self.ui.sigma_s_spinbox.value()
-            self.sigma_r_value = self.ui.sigma_r_spinbox.value()  # Assuming sigma_r still uses a QSlider
+            self.sigma_s_value = stylized_win.ui_stylized.sigma_s_spinbox.value()
+            self.sigma_r_value = stylized_win.ui_stylized.sigma_r_spinbox.value()  # Assuming sigma_r still uses a QSlider
             
-            self.sigma_s_value = int(self.ui.sigma_s_spinbox.text())
-            self.ui.sigma_s_spinbox.setValue(self.sigma_s_value)
+            self.sigma_s_value = int(stylized_win.ui_stylized.sigma_s_spinbox.text())
+            stylized_win.ui_stylized.sigma_s_spinbox.setValue(self.sigma_s_value)
                 
-            self.sigma_r_value = int(self.ui.sigma_r_spinbox.text())
-            self.ui.sigma_r_spinbox.setValue(self.sigma_r_value)
+            self.sigma_r_value = int(stylized_win.ui_stylized.sigma_r_spinbox.text())
+            stylized_win.ui_stylized.sigma_r_spinbox.setValue(self.sigma_r_value)
         except ValueError:
             pass
     
@@ -469,7 +487,6 @@ class MainWindow(QMainWindow):
      
     def generate_maps(self):
         self.loading()
-
         # self.ui.save_btn.setEnabled(True)
         
         # Get texture path name
@@ -490,6 +507,8 @@ class MainWindow(QMainWindow):
         
         # NORMAL MAP
         if self.ui.normal_map_checkbox.isChecked():
+            scaling_factor = 0.1
+
             # Load the texture image in grayscale
             texture = cv2.imread(self.new_color_generated_image, cv2.IMREAD_GRAYSCALE)
 
@@ -501,16 +520,16 @@ class MainWindow(QMainWindow):
             normal_map = np.zeros((texture.shape[0], texture.shape[1], 3), dtype=np.uint8)
             for y in range(texture.shape[0]):
                 for x in range(texture.shape[1]):
-                    if self.ui.normal_mode.currentText() == 'NormalGL':
+                    if pbr_win.ui_pbr.normal_mode.currentText() == 'NormalGL':
                         # DX
-                        nx = -self.normal_size_value * gradient_x[y, x] / 255.0  # Invert the sign
-                        ny = -self.normal_size_value * gradient_y[y, x] / 255.0  # Invert the sign
-                        nz = 1 + self.normal_size_value * np.sqrt(nx**2 + ny**2)  # Invert the sign
+                        nx = -self.normal_size_value * scaling_factor * gradient_x[y, x] / 255.0  
+                        ny = -self.normal_size_value * scaling_factor * gradient_y[y, x] / 255.0  
+                        nz = 1 + scaling_factor + self.normal_size_value * np.sqrt(nx**2 + ny**2) 
                     else:    
                         # GL
-                        nx = self.normal_size_value * gradient_x[y, x] / 255.0  # Invert the sign
-                        ny = self.normal_size_value * gradient_y[y, x] / 255.0  # Invert the sign
-                        nz = 1 - self.normal_size_value * np.sqrt(nx**2 + ny**2)  # Invert the sign
+                        nx = self.normal_size_value * scaling_factor * gradient_x[y, x] / 255.0  
+                        ny = self.normal_size_value * scaling_factor * gradient_y[y, x] / 255.0  
+                        nz = 1 - scaling_factor - self.normal_size_value * np.sqrt(nx**2 + ny**2)
 
                     normal = np.array([nx, ny, nz])
                     normal /= np.linalg.norm(normal)
@@ -539,13 +558,6 @@ class MainWindow(QMainWindow):
 
                     # Adjust the scaling factor for roughness
                     roughness = 0.5 * gradient_magnitude / 255.0  # Adjust the factor as needed
-
-                    # # Ensure roughness values are in the valid range [0, 1]
-                    # roughness = np.clip(roughness, 0, 1)
-
-                    # # Map roughness value to 0-255 range
-                    # roughness_value = int(roughness * 255)
-                    # roughness_map[y, x] = roughness_value
 
                     # Apply gamma correction to brighten the roughness map
                     gamma = 4  # Adjust the gamma value as needed
@@ -595,14 +607,14 @@ class MainWindow(QMainWindow):
             gradient_magnitude = np.sqrt(gradient_x**2 + gradient_y**2)
 
             # Apply a Gaussian blur to the gradient magnitude
-            # blurred_gradient = cv2.GaussianBlur(gradient_magnitude, (5, 5), 0)
-
+            blurred_gradient = cv2.GaussianBlur(gradient_magnitude, (5, 5), 0)
+            
             # Invert the blurred gradient to create the ambient occlusion map
-            ao_map = 1 - gradient_magnitude * 1
+            ao_map = 1 - blurred_gradient
 
             # Clip values to the range [0, 1]
             ao_map = np.clip(ao_map, 0, 1)
-            
+
             # Increase contrast in the dark parts
             ao_map = np.power(ao_map, 2)
 
@@ -637,7 +649,6 @@ class MainWindow(QMainWindow):
 
         current_image = f'{self.texture_location}/.{self.texture_name}_{type}.png'
         
-        scaledHTML=f'width:"5%" height="{hover_preview_size}"'
         # Hover preview
         self.ui.preview_1.setToolTip(
             f"<img src={self.new_color_generated_image} {scaledHTML}/>")
@@ -656,6 +667,14 @@ class MainWindow(QMainWindow):
                 # pixmap = QPixmap(preview_list[1])
                 pixmap = QPixmap(current_image)
                 self.ui.preview_2.setPixmap(pixmap.scaledToWidth(small_preview_size))
+                
+                # Settings window
+                pixmap = QPixmap(current_image)
+                pbr_win.ui_pbr.PBR_Preview_Label.setPixmap(pixmap.scaledToWidth(small_preview_size))
+
+                # Hover preview in settings
+                pbr_win.ui_pbr.PBR_Preview_Label.setToolTip(
+                    f"<img src={current_image} {scaledHTML}/>")
                 
                 # Hover preview
                 self.ui.preview_2.setToolTip(
@@ -776,14 +795,52 @@ class MainWindow(QMainWindow):
         if f'{self.texture_location}/.{self.texture_name}_{type}.png' not in preview_list:
             preview_list.append(f'{self.texture_location}/.{self.texture_name}_{type}.png')
             
- 
+
+class PBRWindow(QWidget):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.ui_pbr = Ui_PBR_Window()
+        self.ui_pbr.setupUi(self)
+        self.setWindowTitle('PBR Settings')
+        self.setWindowFlags(Qt.WindowStaysOnTopHint)
+        self.setFixedSize(400, 450)
+
+        # Connections
+        self.ui_pbr.pbr_generate_btn.clicked.connect(self.generate_pbr)
+
+    def generate_pbr(self):
+        try:
+            window.apply_normal()
+        except Exception as e:
+            print(e)
+
+
+class StylizedWindow(QWidget):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.ui_stylized = Ui_Stylized_Window()
+        self.ui_stylized.setupUi(self)
+        self.setWindowTitle('Stylized Settings')
+        self.setWindowFlags(Qt.WindowStaysOnTopHint)
+        self.setFixedSize(400, 450)
+
+        # Connections
+        self.ui_stylized.stylized_generate_btn.clicked.connect(self.generate_stylized)
+
+    def generate_stylized(self):
+        try:
+            window.apply_stylization()
+        except Exception as e:
+            print(e)
+
+
 def on_about_to_quit():
     # Delete preview
     for i in range(len(preview_list)):
         try:
             print('Deleting', preview_list[i])
             os.remove(preview_list[i])
-        except FileNotFoundError:
+        except Exception as e:
             pass
 
 def refresh():
@@ -792,15 +849,21 @@ def refresh():
         try:
             os.remove(preview_list[i])
         except Exception as e:
-            print(e)
             pass
 
 
 if __name__ == "__main__": 
     app = QApplication([])
+    # PBR
+    pbr_win = PBRWindow()
+    
+    # Stylized
+    stylized_win = StylizedWindow()
+
     window = MainWindow()
+
     window.setWindowTitle('PBRMaster')
-    window.showMaximized()
+    #window.showMaximized()
     window.show()
 
     app.aboutToQuit.connect(on_about_to_quit)
